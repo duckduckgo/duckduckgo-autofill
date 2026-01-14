@@ -26,6 +26,8 @@
     "test:integration:showui": "npm run test:integration -- --headed",
     "test:integration:fast:showui": "npm run test:integration:fast -- --headed",
     "test:integration:ci": "xvfb-run --auto-servernum npm run test:integration",
+    "test:screenshots": "playwright test --config playwright-screenshots.config.js",
+    "test:screenshots:update": "playwright test --config playwright-screenshots.config.js --update-snapshots --last-failed --pass-with-no-tests",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",
     "tsc": "tsc",
