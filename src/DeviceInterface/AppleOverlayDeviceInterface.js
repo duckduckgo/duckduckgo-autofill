@@ -5,6 +5,16 @@ import { createNotification } from '../../packages/device-api/index.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
+ * Get desktop CSS styles. In desktop builds, this is set by autofill-desktop.js.
+ * Falls back to base CSS from defaultOptions if not available.
+ * @returns {string}
+ */
+function getDesktopCSS() {
+    // @ts-ignore - Set by autofill-desktop.js entry point
+    return window.__ddg_autofill_desktop_css__ || '';
+}
+
+/**
  * This subclass is designed to separate code that *only* runs inside the
  * Overlay into a single place.
  *
@@ -34,6 +44,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController() {
+        const desktopCSS = getDesktopCSS();
         return new HTMLTooltipUIController(
             {
                 tooltipKind: /** @type {const} */ ('modern'),
@@ -41,6 +52,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             },
             {
                 ...defaultOptions,
+                ...(desktopCSS ? { css: `<style>${desktopCSS}</style>` } : {}),
                 platform: 'macos',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,

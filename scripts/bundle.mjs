@@ -16,6 +16,10 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
     Promise.all([
         bundle({}),
         bundle({
+            entryPoints: [join(ROOT, 'src/autofill-desktop.js')],
+            outfile: join(ROOT, 'dist/autofill-desktop.js'),
+        }),
+        bundle({
             plugins: [cssPlugin()],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),

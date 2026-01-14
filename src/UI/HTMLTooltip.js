@@ -1,6 +1,6 @@
 import { safeExecute, addInlineStyles, whenIdle } from '../autofill-utils.js';
 import { getSubtypeFromType, getVariantFromType } from '../Form/matching.js';
-import CSS_STYLES from './styles/autofill-tooltip-styles.css';
+import CSS_STYLES from './styles/autofill-tooltip-styles-base.css';
 
 /**
  * @typedef {import("../deviceApiCalls/__generated__/validators-ts").ThemeVariant} ThemeVariant

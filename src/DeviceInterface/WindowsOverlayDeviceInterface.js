@@ -15,6 +15,16 @@ import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
+ * Get desktop CSS styles. In desktop builds, this is set by autofill-desktop.js.
+ * Falls back to base CSS from defaultOptions if not available.
+ * @returns {string}
+ */
+function getDesktopCSS() {
+    // @ts-ignore - Set by autofill-desktop.js entry point
+    return window.__ddg_autofill_desktop_css__ || '';
+}
+
+/**
  * This subclass is designed to separate code that *only* runs inside the
  * Windows Overlay into a single place.
  *
@@ -44,6 +54,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController() {
+        const desktopCSS = getDesktopCSS();
         return new HTMLTooltipUIController(
             {
                 tooltipKind: /** @type {const} */ ('modern'),
@@ -51,6 +62,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
             },
             {
                 ...defaultOptions,
+                ...(desktopCSS ? { css: `<style>${desktopCSS}</style>` } : {}),
                 platform: 'windows',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,
