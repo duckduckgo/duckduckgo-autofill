@@ -44,7 +44,7 @@ const config = {
     webServer: {
         port: 3210,
         reuseExistingServer: true,
-        command: 'npm run build && npm run serve',
+        command: 'DEBUG_UI=true npm run build && npm run serve',
         ignoreHTTPSErrors: true,
     },
     /* Configure snapshot paths per-platform */
