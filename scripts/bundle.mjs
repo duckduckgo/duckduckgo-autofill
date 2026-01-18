@@ -23,6 +23,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
         bundleCSSForExtension(),
         scannerDebug(),
         scannerRunner(),
+        bundleTokensCSS(),
     ]);
 })();
 
@@ -75,6 +76,19 @@ async function bundle(buildOptions = {}) {
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
     }
+}
+
+async function bundleTokensCSS() {
+    const outFile = join(ROOT, 'dist/tokens.css');
+
+    await esbuild.build({
+        entryPoints: [join(ROOT, 'node_modules/@duckduckgo/design-tokens/build/desktop-browsers/tokens.css')],
+        bundle: true,
+        outfile: outFile,
+        loader: { '.css': 'css' },
+    });
+
+    console.log('✅', relative(ROOT, outFile));
 }
 
 async function bundleCSSForExtension() {
