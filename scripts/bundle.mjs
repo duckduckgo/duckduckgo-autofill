@@ -23,6 +23,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
         bundleCSSForExtension(),
         scannerDebug(),
         scannerRunner(),
+        bundleDesignTokens(),
     ]);
 })();
 
@@ -77,6 +78,19 @@ async function bundle(buildOptions = {}) {
     }
 }
 
+async function bundleDesignTokens() {
+    const outFile = join(ROOT, 'dist/autofill-design-tokens.css');
+
+    await esbuild.build({
+        entryPoints: [join(ROOT, 'src/UI/styles/autofill-design-tokens.css')],
+        bundle: true,
+        outfile: outFile,
+        loader: { '.css': 'css' },
+    });
+
+    console.log('✅', relative(ROOT, outFile));
+}
+
 async function bundleCSSForExtension() {
     const outFile = join(ROOT, 'dist/autofill.css');
     /** @type {import("esbuild").BuildOptions} */
@@ -111,9 +125,7 @@ async function uiPreview() {
         legalComments: 'inline',
         outfile: join(ROOT, 'debug/dist/ui-debug.js'),
         metafile: true,
-        loader: {
-            '.css': 'text',
-        },
+        plugins: [cssPlugin()],
     };
     await esbuild.build(config);
 }

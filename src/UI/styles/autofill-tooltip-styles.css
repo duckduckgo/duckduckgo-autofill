@@ -1,3 +1,5 @@
+@import './autofill-theme-mapping.css';
+
 :root {
     color-scheme: light dark;
 }
@@ -54,15 +56,29 @@ which has its own box-shadow and border-radius settings.
     --hr-margin: 5px 9px;
     --border-radius: 4px;
 
-    /* Interactive Elements */
+    /* Interactive Elements - Hover */
     --hover-color-primary: var(--t-mac-interactive-text);
     --hover-color-secondary: var(--t-mac-interactive-text);
     --hover-color-primary-dark: var(--t-mac-interactive-text);
     --hover-color-secondary-dark: var(--t-mac-interactive-text);
     --hover-bg: var(--t-mac-interactive);
     --hover-bg-dark: var(--t-mac-interactive);
-    --hover-effect: invert(100%);
-    --hover-effect-dark: invert(100%);
+
+    /* Interactive Elements - Press/Active */
+    --press-bg: var(--t-mac-interactive);
+    --press-bg-dark: var(--t-mac-interactive);
+    --press-color-primary: var(--t-mac-interactive-text);
+    --press-color-secondary: var(--t-mac-interactive-text);
+    --press-color-primary-dark: var(--t-mac-interactive-text);
+    --press-color-secondary-dark: var(--t-mac-interactive-text);
+
+    /* Divider */
+    --divider-color: rgba(0,0,0,.1);
+    --divider-color-dark: rgba(255,255,255,.2);
+
+    /* Icon color - for outline icons (not brand icons) */
+    --icon-color: rgba(0,0,0,.84);
+    --icon-color-dark: rgba(255,255,255,.84);
 
     /* Top autofill min height */
     --top-autofill-min-height: 100vh;
@@ -84,21 +100,53 @@ which has its own box-shadow and border-radius settings.
     --hr-margin: 4px 0px;
     --border-radius: 3px;
 
-    /* Interactive Elements */
+    /* Interactive Elements - Hover */
     --hover-color-primary: var(--t-text-primary);
     --hover-color-secondary: var(--t-text-secondary);
     --hover-color-primary-dark: var(--t-text-primary-dark);
     --hover-color-secondary-dark: var(--t-text-secondary-dark);
     --hover-bg: var(--t-windows-interactive);
     --hover-bg-dark: var(--t-windows-interactive-dark);
-    --hover-effect: none;
-    --hover-effect-dark: invert(100%);
+
+    /* Interactive Elements - Press/Active */
+    --press-color-primary: var(--t-text-primary);
+    --press-color-secondary: var(--t-text-secondary);
+    --press-color-primary-dark: var(--t-text-primary-dark);
+    --press-color-secondary-dark: var(--t-text-secondary-dark);
+    --press-bg: var(--t-windows-interactive);
+    --press-bg-dark: var(--t-windows-interactive-dark);
 
     /* Top autofill min height, on windows 100vh causes the popup to be too tall for some reason.
      * We don't know the root cause yet, but setting it to auto fixes the issue.
      * https://app.asana.com/1/137249556945/task/1210848278309115/comment/1210997380754990?focus=true
      */
     --top-autofill-min-height: auto;
+}
+
+/* --- Theme token overrides for overlay (macOS/Windows) --- */
+.wrapper:is([data-platform="macos"], [data-platform="windows"]) {
+    --color-primary: var(--ds-color-theme-text-primary);
+    --color-secondary: var(--ds-color-theme-text-secondary);
+    --color-primary-dark: var(--ds-color-theme-text-primary);
+    --color-secondary-dark: var(--ds-color-theme-text-secondary);
+    --bg: var(--ds-color-theme-surface-tertiary);
+    --bg-dark: var(--ds-color-theme-surface-tertiary);
+    --divider-color: var(--ds-color-theme-surface-decoration-primary);
+    --divider-color-dark: var(--ds-color-theme-surface-decoration-primary);
+    --icon-color: var(--ds-color-theme-icons-primary);
+    --icon-color-dark: var(--ds-color-theme-icons-primary);
+    --hover-bg: var(--ds-color-theme-accent-primary);
+    --hover-bg-dark: var(--ds-color-theme-accent-primary);
+    --hover-color-primary: var(--ds-color-theme-accent-content-primary);
+    --hover-color-primary-dark: var(--ds-color-theme-accent-content-primary);
+    --hover-color-secondary: var(--ds-color-theme-accent-content-secondary);
+    --hover-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
+    --press-bg: var(--ds-color-theme-accent-secondary);
+    --press-bg-dark: var(--ds-color-theme-accent-secondary);
+    --press-color-primary: var(--ds-color-theme-accent-content-primary);
+    --press-color-primary-dark: var(--ds-color-theme-accent-content-primary);
+    --press-color-secondary: var(--ds-color-theme-accent-content-secondary);
+    --press-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
 }
 
 .wrapper *,
@@ -225,6 +273,19 @@ which has its own box-shadow and border-radius settings.
     }
 }
 
+/* Active/Press state */
+.wrapper:not(.top-autofill) .tooltip__button:active {
+    background-color: var(--press-bg);
+    color: var(--press-color-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:not(.top-autofill) .tooltip__button:active {
+        background-color: var(--press-bg-dark);
+        color: var(--press-color-primary-dark);
+    }
+}
+
 /* Data autofill tooltip specific */
 .tooltip__button--data {
     position: relative;
@@ -261,44 +322,9 @@ which has its own box-shadow and border-radius settings.
     background-size: 20px 20px;
     background-repeat: no-repeat;
     background-position: center center;
-}
-
-/* FIXME: find a better way to address :not bitwarden */
-/* NB: .currentFocus is used by MacOS */
-.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
-.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: var(--hover-effect);
-}
-
-.tooltip__button--data.currentFocus.no-hover-effect::before,
-.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before,
-.tooltip__button--data.no-hover-effect:hover::before {
-    filter: none;
-}
-
-/* Icon effects */
-@media (prefers-color-scheme: dark) {
-    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
-        filter: var(--hover-effect-dark);
-        opacity: .9;
-    }
-
-    .tooltip__button--data.no-hover-effect::before,
-    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
-        filter: none;
-        opacity: 1;
-    }
-
-    .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
-    .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-        filter: var(--hover-effect-dark)
-    }
-
-    .tooltip__button--data.currentFocus.no-hover-effect::before,
-    .tooltip__button--data.no-hover-effect:hover::before,
-    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
-        filter: none;
-    }
+    mask-size: 20px 20px;
+    mask-repeat: no-repeat;
+    mask-position: center center;
 }
 
 .tooltip__button__text-container {
@@ -365,6 +391,25 @@ which has its own box-shadow and border-radius settings.
     }
 }
 
+/* Active/Press state for labels */
+.wrapper:not(.top-autofill) .tooltip__button:active .label {
+    color: var(--press-color-primary);
+
+    &.label--small {
+        color: var(--press-color-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:not(.top-autofill) .tooltip__button:active .label {
+        color: var(--press-color-primary-dark);
+
+        &.label--small {
+            color: var(--press-color-secondary-dark);
+        }
+    }
+}
+
 .tooltip__button--secondary {
     font-size: 13px;
     padding: 5px 9px;
@@ -372,22 +417,47 @@ which has its own box-shadow and border-radius settings.
     margin: 0;
 }
 
-/* Icons */
-.tooltip__button--data--credentials::before,
-.tooltip__button--data--credentials__current::before {
-    background-size: 20px;
-    background-image: url('../img/key.svg');
+/* Icons - outline icons use mask for theming, brand icons use background-image */
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/key.svg');
+    mask-image: url('../img/key.svg');
 }
 .tooltip__button--data--credentials__new::before {
-    background-size: 20px;
-    background-image: url('../img/key-login.svg');
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/key-login.svg');
+    mask-image: url('../img/key-login.svg');
 }
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/profile.svg');
+    mask-image: url('../img/profile.svg');
+}
+.tooltip__button--credentials-import::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/key-import.svg');
+    mask-image: url('../img/key-import.svg');
+}
+.tooltip__button--totp::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/totp.svg');
+    mask-image: url('../img/totp.svg');
+}
+.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {
+    background-image: url('../img/bitwarden.svg');
+}
+.tooltip__button--data--credentials.tooltip__button--data--bitwarden#provider_locked::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before {
+    background-image: url('../img/bitwarden-locked.svg');
+}
+
 /* Payment Provider Icons */
 .tooltip__button--data--creditCards::before,
 .tooltip__button--data--provider__generic::before {
     background-image: url('../img/credit-card-generic.svg');
 }
-
 .tooltip__button--data--provider__dinersClub::before {
     background-image: url('../img/credit-card-diners-club.png');
 }
@@ -411,24 +481,54 @@ which has its own box-shadow and border-radius settings.
 }
 /* /Payment Provider Icons */
 
-.tooltip__button--data--identities::before {
-    background-size: 20px;
-    background-image: url('../img/profile.svg');
+@media (prefers-color-scheme: dark) {
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before,
+    .tooltip__button--data--credentials__new::before,
+    .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before,
+    .tooltip__button--credentials-import::before,
+    .tooltip__button--totp::before {
+        background-color: var(--icon-color-dark);
+    }
 }
-.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {
-    background-image: url('../img/bitwarden.svg');
+
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
+.tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
+.tooltip__button--totp:is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials__new:active::before,
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
+.tooltip__button--credentials-import:active::before,
+.tooltip__button--totp:active::before {
+    background-color: var(--hover-color-primary);
 }
-.tooltip__button--data--credentials.tooltip__button--data--bitwarden#provider_locked::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before {
-    background-image: url('../img/bitwarden-locked.svg');
+
+@media (prefers-color-scheme: dark) {
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+    .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
+    .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
+    .tooltip__button--totp:is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+    .tooltip__button--data--credentials__new:active::before,
+    .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
+    .tooltip__button--credentials-import:active::before,
+    .tooltip__button--totp:active::before {
+        background-color: var(--hover-color-primary-dark);
+    }
 }
 
 hr {
     display: block;
     margin: var(--hr-margin);
     border: none; /* reset the border */
-    border-top: 1px solid rgba(0,0,0,.1);
+    border-top: 1px solid var(--divider-color);
 }
 
 hr:first-child {
@@ -437,7 +537,7 @@ hr:first-child {
 
 @media (prefers-color-scheme: dark) {
     hr {
-        border-top: 1px solid rgba(255,255,255,.2);
+        border-top: 1px solid var(--divider-color-dark);
     }
 }
 
@@ -554,19 +654,6 @@ hr:first-child {
     position: absolute;
     right: 12px;
     top: 12px;
-}
-
-/* Import promotion prompt icon style */
-
-.tooltip__button--credentials-import::before {
-    background-size: 20px;
-    background-image: url('../img/key-import.svg');
-}
-
-/* TOTP tooltip specific */
-.tooltip__button--totp::before {
-    background-size: 20px;
-    background-image: url('../img/totp.svg');
 }
 
 .truncate {

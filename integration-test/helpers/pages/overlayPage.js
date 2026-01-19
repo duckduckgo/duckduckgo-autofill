@@ -62,6 +62,14 @@ export function overlayPage(page) {
             const calls = await mockedCalls(page, { names: [callName] });
             expect(calls.length).toBe(times);
         }
+
+        /**
+         * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').ThemeVariant} themeVariant
+         */
+        async assertThemeVariant(themeVariant) {
+            const wrapper = page.locator('.wrapper');
+            await expect(wrapper).toHaveAttribute('data-theme-variant', themeVariant);
+        }
     }
 
     return new OverlayPage();

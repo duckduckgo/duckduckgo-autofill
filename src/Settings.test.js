@@ -128,6 +128,14 @@ describe('Settings', () => {
             fn(settings);
         }
     });
+    it('reads themeVariant from userPreferences', async () => {
+        const settings = await settingsFromMockedCalls({}, createAvailableInputTypes(), { themeVariant: 'rose' });
+        expect(settings.themeVariant).toBe('rose');
+    });
+    it('defaults themeVariant to "default" when not provided', async () => {
+        const settings = await settingsFromMockedCalls({}, createAvailableInputTypes());
+        expect(settings.themeVariant).toBe('default');
+    });
     it('handles errors in transport (falling back to defaults)', async () => {
         const deviceApi = new DeviceApi({
             async send(_call) {
@@ -160,8 +168,9 @@ describe('Settings', () => {
 /**
  * @param {import("./Settings").AutofillFeatureToggles} featureToggles
  * @param {import("./Settings").AvailableInputTypes} availableInputTypes
+ * @param {Partial<import("./deviceApiCalls/__generated__/validators-ts").UserPreferences>} [userPreferencesOverrides]
  */
-async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
+async function settingsFromMockedCalls(featureToggles, availableInputTypes, userPreferencesOverrides = {}) {
     const resp1 = new GetRuntimeConfigurationCall(null).result({
         success: {
             contentScope: {
@@ -182,6 +191,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                     autofill: { settings: { featureToggles } },
                 },
                 sessionKey: 'abc123',
+                ...userPreferencesOverrides,
             },
         },
     });

@@ -54,6 +54,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
                 platform: 'windows',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,
+                themeVariant: this.settings.themeVariant,
                 tooltipPositionClass: () => '.wrapper { transform: none; }',
                 setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
                 remove: async () => this._closeAutofillParent(),

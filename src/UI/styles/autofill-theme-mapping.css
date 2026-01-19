@@ -1,0 +1,248 @@
+ /**
+  * Theme Mappings (macOS and Windows only)
+  *
+  * These mappings allow use of semantic theme variables (e.g., --ds-color-theme-surface-primary)
+  * that automatically resolve to the correct values based on:
+  * - browser theme (light mode, dark mode)
+  * - data-theme-variant (default, coolGray, slateBlue, green, violet, rose, orange, desert)
+  */
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"]) {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-default-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-default-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-default-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-default-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-default-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-default-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-default-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-default-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-default-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-default-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"]) {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-default-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-default-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-default-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-default-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-default-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-default-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-default-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-default-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-default-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-default-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="coolGray"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-cool-gray-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-cool-gray-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-cool-gray-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-cool-gray-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-cool-gray-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-cool-gray-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-cool-gray-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-cool-gray-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-cool-gray-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-cool-gray-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="coolGray"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-cool-gray-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-cool-gray-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-cool-gray-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-cool-gray-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-cool-gray-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-cool-gray-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-cool-gray-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-cool-gray-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-cool-gray-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-cool-gray-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="slateBlue"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-slate-blue-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-slate-blue-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-slate-blue-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-slate-blue-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-slate-blue-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-slate-blue-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-slate-blue-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-slate-blue-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-slate-blue-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-slate-blue-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="slateBlue"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-slate-blue-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-slate-blue-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-slate-blue-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-slate-blue-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-slate-blue-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-slate-blue-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-slate-blue-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-slate-blue-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-slate-blue-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-slate-blue-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="green"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-green-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-green-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-green-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-green-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-green-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-green-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-green-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-green-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-green-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-green-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="green"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-green-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-green-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-green-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-green-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-green-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-green-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-green-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-green-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-green-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-green-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="violet"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-violet-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-violet-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-violet-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-violet-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-violet-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-violet-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-violet-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-violet-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-violet-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-violet-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="violet"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-violet-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-violet-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-violet-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-violet-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-violet-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-violet-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-violet-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-violet-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-violet-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-violet-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="rose"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-rose-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-rose-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-rose-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-rose-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-rose-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-rose-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-rose-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-rose-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-rose-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-rose-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="rose"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-rose-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-rose-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-rose-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-rose-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-rose-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-rose-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-rose-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-rose-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-rose-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-rose-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="orange"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-orange-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-orange-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-orange-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-orange-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-orange-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-orange-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-orange-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-orange-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-orange-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-orange-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="orange"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-orange-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-orange-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-orange-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-orange-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-orange-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-orange-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-orange-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-orange-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-orange-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-orange-dark-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="desert"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-desert-light-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-desert-light-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-desert-light-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-desert-light-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-desert-light-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-desert-light-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-desert-light-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-desert-light-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-desert-light-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-desert-light-control-fill-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .wrapper:is([data-platform="macos"], [data-platform="windows"])[data-theme-variant="desert"] {
+        --ds-color-theme-surface-tertiary: var(--ds-color-theme-desert-dark-surface-tertiary);
+        --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-desert-dark-surface-decoration-primary);
+        --ds-color-theme-text-primary: var(--ds-color-theme-desert-dark-text-primary);
+        --ds-color-theme-text-secondary: var(--ds-color-theme-desert-dark-text-secondary);
+        --ds-color-theme-icons-primary: var(--ds-color-theme-desert-dark-icons-primary);
+        --ds-color-theme-accent-primary: var(--ds-color-theme-desert-dark-accent-primary);
+        --ds-color-theme-accent-secondary: var(--ds-color-theme-desert-dark-accent-secondary);
+        --ds-color-theme-accent-content-primary: var(--ds-color-theme-desert-dark-accent-content-primary);
+        --ds-color-theme-accent-content-secondary: var(--ds-color-theme-desert-dark-accent-content-secondary);
+        --ds-color-theme-control-fill-secondary: var(--ds-color-theme-desert-dark-control-fill-secondary);
+    }
+}

@@ -32,6 +32,9 @@
         "language": {
           "type": "string"
         },
+        "themeVariant": {
+          "$ref": "theme-variant.json"
+        },
         "platform": {
           "type": "object",
           "additionalProperties": false,

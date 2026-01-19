@@ -144,6 +144,10 @@ export function createAndroidMocks() {
         withDataType: function (data) {
             return withDataType(this, data);
         },
+        withThemeVariant: function (_themeVariant) {
+            // Android doesn't use themeVariant yet
+            return this;
+        },
         withCheckCredentialsProviderStatus: function () {
             return this;
         },

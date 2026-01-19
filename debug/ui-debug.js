@@ -25,6 +25,7 @@ const showAutofill = {
 const url = new URL(window.location.href);
 const locale = url.searchParams.get('locale') || 'en';
 const platform = url.searchParams.get('platform') || 'macos';
+const themeVariant = url.searchParams.get('themeVariant') || 'default';
 
 const credentials = [
     {
@@ -258,6 +259,7 @@ function createTooltip(item, uniqueId) {
         ...item.options,
         isTopAutofill: true,
         platform,
+        themeVariant,
     });
 
     main?.appendChild(elem);
@@ -289,6 +291,7 @@ function createImportTooltip(item, uniqueId) {
         ...item.options,
         isTopAutofill: false,
         platform,
+        themeVariant,
         // isIncontextSignupAvailable: () => true
     });
 

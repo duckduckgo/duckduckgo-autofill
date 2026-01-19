@@ -44,6 +44,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
                 platform: 'macos',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,
+                themeVariant: this.settings.themeVariant,
                 tooltipPositionClass: () => '.wrapper { transform: none; }',
                 setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
                 remove: async () => this._closeAutofillParent(),

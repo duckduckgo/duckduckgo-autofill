@@ -3,6 +3,10 @@ import { getSubtypeFromType, getVariantFromType } from '../Form/matching.js';
 import CSS_STYLES from './styles/autofill-tooltip-styles.css';
 
 /**
+ * @typedef {import("../deviceApiCalls/__generated__/validators-ts").ThemeVariant} ThemeVariant
+ */
+
+/**
  * @typedef {object} HTMLTooltipOptions
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
@@ -16,6 +20,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
  * @property {boolean} checkVisibility
  * @property {boolean} hasCaret
  * @property {() => boolean} isIncontextSignupAvailable
+ * @property {ThemeVariant} themeVariant
  */
 
 /**
@@ -28,6 +33,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
 export const defaultOptions = {
     wrapperClass: '',
     platform: null,
+    themeVariant: 'default',
     tooltipPositionClass: (top, left) => `
         .tooltip {
             transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;

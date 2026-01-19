@@ -26,6 +26,7 @@ let package = Package(
                 .copy("autofill.js"),
                 .copy("autofill-debug.js"),
                 .copy("autofill.css"),
+                .copy("autofill-design-tokens.css"),
                 .copy("shared-credentials.json"),
                 .copy("TopAutofill.html"),
             ]
