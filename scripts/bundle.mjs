@@ -23,6 +23,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
         bundleCSSForExtension(),
         scannerDebug(),
         scannerRunner(),
+        bundleDesignTokens(),
     ]);
 })();
 
@@ -75,6 +76,19 @@ async function bundle(buildOptions = {}) {
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
     }
+}
+
+async function bundleDesignTokens() {
+    const outFile = join(ROOT, 'dist/autofill-design-tokens.css');
+
+    await esbuild.build({
+        entryPoints: [join(ROOT, 'src/UI/styles/autofill-design-tokens.css')],
+        bundle: true,
+        outfile: outFile,
+        loader: { '.css': 'css' },
+    });
+
+    console.log('✅', relative(ROOT, outFile));
 }
 
 async function bundleCSSForExtension() {

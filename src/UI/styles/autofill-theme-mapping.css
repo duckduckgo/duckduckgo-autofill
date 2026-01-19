@@ -7,8 +7,6 @@
   * - data-theme-variant (default, coolGray, slateBlue, green, violet, rose, orange, desert)
   */
 
-@import '@duckduckgo/design-tokens/build/desktop-browsers/tokens.css';
-
 @media (prefers-color-scheme: light) {
     .wrapper:is([data-platform="macos"], [data-platform="windows"]) {
         --ds-color-theme-surface-tertiary: var(--ds-color-theme-default-light-surface-tertiary);
