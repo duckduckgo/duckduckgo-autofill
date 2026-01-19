@@ -7,12 +7,14 @@
     html, body {
         margin: 0;
         --loading-color: $LOADING_COLOR$;
-        background-color: var(--loading-color, rgba(242, 240, 240, 0.9));
+        background-color: rgba(242, 240, 240, 0.9);
+        background-color: var(--loading-color);
         overscroll-behavior: none;
     }
     @media (prefers-color-scheme: dark) {
         html, body {
-            background-color: var(--loading-color, rgba(100, 98, 100, 0.9));
+            background-color: rgba(100, 98, 100, 0.9);
+            background-color: var(--loading-color);
         }
     }
 </style>
