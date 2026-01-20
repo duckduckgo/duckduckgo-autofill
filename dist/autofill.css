@@ -309,14 +309,14 @@
   --hover-bg-dark: var(--ds-color-theme-accent-primary);
   --hover-color-primary: var(--ds-color-theme-accent-content-primary);
   --hover-color-primary-dark: var(--ds-color-theme-accent-content-primary);
-  --hover-color-secondary: var(--ds-color-theme-accent-content-secondary);
-  --hover-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
+  --hover-color-secondary: var(--ds-color-theme-accent-content-primary);
+  --hover-color-secondary-dark: var(--ds-color-theme-accent-content-primary);
   --press-bg: var(--ds-color-theme-accent-secondary);
   --press-bg-dark: var(--ds-color-theme-accent-secondary);
   --press-color-primary: var(--ds-color-theme-accent-content-primary);
   --press-color-primary-dark: var(--ds-color-theme-accent-content-primary);
-  --press-color-secondary: var(--ds-color-theme-accent-content-secondary);
-  --press-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
+  --press-color-secondary: var(--ds-color-theme-accent-content-primary);
+  --press-color-secondary-dark: var(--ds-color-theme-accent-content-primary);
 }
 .wrapper *,
 .wrapper *::before,
