@@ -305,7 +305,7 @@ const matchingConfiguration = {
                         '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
-                    skip: 'phone',
+                    skip: 'phone|first.?name|last.?name',
                     forceUnknown:
                         'search|policy' +
                         // Github assignee picker

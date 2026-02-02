@@ -402,7 +402,7 @@
           currentPassword: { match: /current|old|previous|expired|existing/iu },
           username: {
             match: /(user|account|online.?id|membership.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice (cliente|uten)|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
-            skip: /phone/iu,
+            skip: /phone|first.?name|last.?name/iu,
             forceUnknown: /search|policy|choose a user\b/iu
           },
           cardName: {
