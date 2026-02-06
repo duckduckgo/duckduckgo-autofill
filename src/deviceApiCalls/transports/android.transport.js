@@ -42,6 +42,10 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config);
         }
 
+        if (typeof window.BrowserAutofill === 'undefined') {
+            throw new Error('BrowserAutofill bridge not available');
+        }
+
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
             window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
             return waitForResponse(deviceApiCall.id, this.config);
