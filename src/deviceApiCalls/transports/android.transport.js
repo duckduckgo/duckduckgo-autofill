@@ -43,7 +43,7 @@ export class AndroidTransport extends DeviceApiTransport {
         }
 
         if (typeof window.BrowserAutofill === 'undefined') {
-            throw new Error('BrowserAutofill bridge not available');
+            return;
         }
 
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {

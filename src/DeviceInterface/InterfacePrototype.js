@@ -627,16 +627,12 @@ class InterfacePrototype {
             let userData;
             try {
                 userData = await this.getUserData();
-            } catch (e) {
-                // Expected: user may not be signed in or data unavailable on this DDG domain
-            }
+            } catch (e) {}
 
             let capabilities;
             try {
                 capabilities = await this.getEmailProtectionCapabilities();
-            } catch (e) {
-                // Expected: capabilities may be unavailable if user is not signed in
-            }
+            } catch (e) {}
 
             // Set up listener for web app actions
             if (this.globalConfig.isDDGDomain) {
