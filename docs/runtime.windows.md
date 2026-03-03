@@ -362,4 +362,7 @@ supportsTopFrame = true
 
 let isWindows = false
 // INJECT isWindows HERE
+
+let healthCheckPing = false
+// INJECT healthCheckPing HERE
 ```
