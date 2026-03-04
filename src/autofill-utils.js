@@ -1,6 +1,6 @@
 import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
 import { constants } from './constants.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/configuration/index.js';
 
 const SIGN_IN_MSG = { signMeIn: true };
 

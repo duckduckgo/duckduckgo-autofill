@@ -3,7 +3,7 @@ import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './devic
 import { autofillSettingsSchema } from './deviceApiCalls/__generated__/validators.zod.js';
 import { autofillEnabled } from './autofill-utils.js';
 import SiteSpecificFeature from './site-specific-feature.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils.js';
+import { processConfig } from '@duckduckgo/content-scope-scripts/configuration/index.js';
 
 /**
  * Some Type helpers to prevent duplication

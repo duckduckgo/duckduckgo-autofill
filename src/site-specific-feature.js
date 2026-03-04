@@ -1,4 +1,4 @@
-import ConfigFeature from '@duckduckgo/content-scope-scripts/injected/src/config-feature';
+import { ConfigFeature } from '@duckduckgo/content-scope-scripts/configuration/index.js';
 import { isValidSupportedType } from './Form/matching.js';
 
 const FEATURE_NAME = 'siteSpecificFixes';

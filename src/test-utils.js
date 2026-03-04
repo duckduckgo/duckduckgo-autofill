@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import SiteSpecificFeature from './site-specific-feature.js';
 import path from 'path';
-import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/configuration/index.js';
 
 /**
  * Creates a given or generic form element, overwrites the DOM with it and returns it
