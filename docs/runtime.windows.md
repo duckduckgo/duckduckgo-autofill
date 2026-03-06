@@ -334,7 +334,7 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: {...} })` 
 - Currently, autofill doesn't care/listen for any response to this, but may do later.
-- TODO: Schema for the 'data' argument above
+- See [storeFormData.params.json](../src/deviceApiCalls/schemas/storeFormData.params.json)
 
 **request example**
 

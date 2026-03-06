@@ -168,9 +168,9 @@ window.BrowserAutofill.storeFormData(JSON.stringify(data))
 ## `window.BrowserAutofill.getAutofillData(request)`
 
 - Autofill will send `request` as a string of JSON 
-- See: [../src/schema/request.getAutofillData.schema.json](../src/deviceApiCalls/schemas/getAutofillData.params.json)
+- See: [getAutofillData.params.json](../src/deviceApiCalls/schemas/getAutofillData.params.json)
 - Response Message via: `window.postMessage(response)`
-  - See: [../src/schema/response.getAutofillData.schema.json](../src/deviceApiCalls/schemas/getAutofillData.result.json)
+  - See: [getAutofillData.result.json](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **`request`** example
 
