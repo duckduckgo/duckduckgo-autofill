@@ -3,7 +3,7 @@
 on android devices, this data is retrieved from the following string-replacements:
 
 Internally, we force it into the following shape in order to conform to the following schema definition:
-- [Runtime Configuration Schema](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+- Runtime Configuration: see `contentScope`, `userUnprotectedDomains`, and `userPreferences` string replacements below
 
 **strings to replace**
 ```
@@ -76,7 +76,7 @@ Directly replace the line above in the following way:
 
 `str.replace('// INJECT availableInputTypes HERE', 'contentScope = {JSON_HERE}') + ';'`
 
-See: [../src/schema/availableInputTypes.json](../src/deviceApiCalls/schemas/availableInputTypes.json).
+See: [availableInputTypes.json](../src/deviceApiCalls/schemas/availableInputTypes.json).
 
 This represents which input types we can autofill for the current user. Values are `true` if we can autofill the
 field type with at least one item. For example, if we have two credential items and the first only has a username

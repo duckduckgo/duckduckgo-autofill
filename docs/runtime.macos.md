@@ -1,6 +1,6 @@
 ## macOS
 
-Please follow the [iOS Runtime Docs]('./runtime.ios.md) for 
+Please follow the [iOS Runtime Docs](./runtime.ios.md) for 
 - `getRuntimeConfiguration`
 - `getAvailableInputTypes`
 

@@ -5,7 +5,7 @@ on Apple devices, this data is retrieved from the following string-replacements
 - [BrowserServices Kit String replacements](https://github.com/duckduckgo/apple-browsers/blob/main/SharedPackages/BrowserServicesKit/Sources/BrowserServicesKit/Autofill/AutofillUserScript+SourceProvider.swift#L54-L56)
 
 Internally, we force it into the following shape in order to conform to the following schema definition:
-- [Runtime Configuration Schema](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+- Runtime Configuration: see `contentScope`, `userUnprotectedDomains`, and `userPreferences` string replacements below
 
 **strings to replace**
 ```
@@ -43,7 +43,7 @@ userUnprotectedDomains = [];
 userPreferences = {
   "debug": false,
   "platform": {
-    "name": "android"
+    "name": "ios"
   },
   "features": {
     "autofill": {
