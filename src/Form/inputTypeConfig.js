@@ -72,6 +72,20 @@ const getIdentitiesAlternateIcon = (input, { device }) => {
 const canBeInteractedWith = (input) => !input.readOnly && !input.disabled;
 
 /**
+ * Checks whether an input element has DOM indicators that it functions as a custom dropdown.
+ * This includes ARIA combobox roles, popup indicators, and native datalist associations.
+ * Used to avoid showing the autofill tooltip on fields that already have their own picker UI.
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+const hasDropdownIndicators = (input) => {
+    if (input.getAttribute('role') === 'combobox') return true;
+    if (input.hasAttribute('aria-haspopup')) return true;
+    if (input.list) return true;
+    return false;
+};
+
+/**
  * Checks if the input can be decorated and we have the needed data
  * @param {HTMLInputElement} input
  * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -171,6 +185,17 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
         shouldDecorate: async (input, { device }) => {
+            // Don't show tooltip for state/country inputs that have custom dropdown indicators
+            // (e.g., role="combobox", aria-haspopup, or an associated <datalist>).
+            // These fields have their own picker UI, and our tooltip would cover it.
+            // They will still be autofilled when triggered from another identity field,
+            // because isFieldDecorated checks ATTR_INPUT_TYPE (set regardless of decoration).
+            if (input instanceof HTMLInputElement) {
+                const subtype = getInputSubtype(input);
+                if ((subtype === 'addressProvince' || subtype === 'addressCountryCode') && hasDropdownIndicators(input)) {
+                    return false;
+                }
+            }
             return canBeAutofilled(input, device);
         },
         dataType: 'Identities',
