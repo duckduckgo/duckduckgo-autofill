@@ -13,10 +13,7 @@ export function stateDropdownPage(page) {
          * @return {Promise<void>}
          */
         async navigate(formType = 'combobox') {
-            const url =
-                formType === 'plain-text'
-                    ? `${constants.pages.stateDropdown}?form-type=plain-text`
-                    : constants.pages.stateDropdown;
+            const url = formType === 'plain-text' ? `${constants.pages.stateDropdown}?form-type=plain-text` : constants.pages.stateDropdown;
             await page.goto(url);
         }
 
