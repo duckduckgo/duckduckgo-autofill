@@ -15,16 +15,20 @@ export class AndroidTransport extends DeviceApiTransport {
     /** @type {GlobalConfig} */
     config;
 
+    /** @type {typeof window.BrowserAutofill} */
+    autofillBridge;
+
     /** @param {GlobalConfig} globalConfig */
     constructor(globalConfig) {
         super();
         this.config = globalConfig;
+        this.autofillBridge = window.BrowserAutofill;
 
         if (this.config.isDDGTestMode) {
-            if (typeof window.BrowserAutofill?.getAutofillData !== 'function') {
+            if (typeof this.autofillBridge?.getAutofillData !== 'function') {
                 console.warn('window.BrowserAutofill.getAutofillData missing');
             }
-            if (typeof window.BrowserAutofill?.storeFormData !== 'function') {
+            if (typeof this.autofillBridge?.storeFormData !== 'function') {
                 console.warn('window.BrowserAutofill.storeFormData missing');
             }
         }
@@ -42,35 +46,39 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config);
         }
 
+        if (!this.autofillBridge) {
+            return;
+        }
+
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
-            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
+            this.autofillBridge.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
             return waitForResponse(deviceApiCall.id, this.config);
         }
 
         if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
-            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params));
+            return this.autofillBridge.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
-            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params));
+            return this.autofillBridge.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
-            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params));
+            return this.autofillBridge.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
-            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
+            this.autofillBridge.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
             return waitForResponse(deviceApiCall.id, this.config);
         }
 
         if (deviceApiCall instanceof GetAutofillDataCall) {
-            window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params));
+            this.autofillBridge.getAutofillData(JSON.stringify(deviceApiCall.params));
             return waitForResponse(deviceApiCall.id, this.config);
         }
 
         if (deviceApiCall instanceof StoreFormDataCall) {
-            return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
+            return this.autofillBridge.storeFormData(JSON.stringify(deviceApiCall.params));
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method);
