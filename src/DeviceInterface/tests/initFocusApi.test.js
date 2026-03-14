@@ -22,7 +22,6 @@ describe('initFocusApi', () => {
         settings = {
             featureToggles: {
                 input_focus_api: true,
-                autocomplete_attribute_support: true,
             },
         };
 
@@ -95,7 +94,7 @@ describe('initFocusApi', () => {
         expect(attachKeyboardCallback).not.toHaveBeenCalled();
     });
 
-    it('should set autocomplete attribute on email input when autocomplete_attribute_support is enabled', () => {
+    it('should set autocomplete attribute on email input', () => {
         attachAndReturnGenericForm(`
             <form>
                 <input type="email" name="email" id="email-input" />
@@ -170,30 +169,6 @@ describe('initFocusApi', () => {
         expect(emailInput.getAttribute('autocomplete')).toBe('email');
 
         emailInput.dispatchEvent(new Event('blur', { bubbles: true }));
-
-        expect(emailInput.hasAttribute('autocomplete')).toBe(false);
-    });
-
-    it('should not set autocomplete when autocomplete_attribute_support is disabled', () => {
-        settings.featureToggles.autocomplete_attribute_support = false;
-
-        // Reinitialize the API because the feature toggle has changed
-        focusApi.cleanup();
-        focusApi = initFocusApi(forms, settings, attachKeyboardCallback);
-
-        attachAndReturnGenericForm(`
-            <form>
-                <input type="email" name="email" id="email-input" />
-            </form>
-        `);
-
-        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
-
-        emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
-
-        const focusEvent = new FocusEvent('focus', { bubbles: true });
-        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
-        window.dispatchEvent(focusEvent);
 
         expect(emailInput.hasAttribute('autocomplete')).toBe(false);
     });
