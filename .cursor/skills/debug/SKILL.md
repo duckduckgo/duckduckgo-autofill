@@ -54,7 +54,7 @@ Is the issue specific to one domain (or a small set of domains)?
 ### Creating a site-specific rule
 
 Site-specific rules live in the `remote-config` repo (privacy-configuration). Follow the
-`remote-config/.cursor/rules/autofill-add-site-specific-settings.mdc` rule for detailed instructions.
+`/autofill-site-specific-settings` skill (in `remote-config/.cursor/skills/`) for detailed instructions.
 
 Quick reference:
 
@@ -133,7 +133,7 @@ cannot be expressed as config). Document why.
   `data-ddg-autofilled`, `img` tags, `svg` elements, inline `style` attributes, `script` tags.
   Use `data-manual-scoring` for annotations (subtype only, e.g., `password.current` not
   `credentials.password.current`). Use `data-manual-submit` for submit buttons. See the
-  `add-test-form.mdc` rule for details.
+  `/add-test-form` skill for details.
 
 ### Types: be precise
 
