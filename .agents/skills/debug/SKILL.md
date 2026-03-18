@@ -54,7 +54,7 @@ Is the issue specific to one domain (or a small set of domains)?
 ### Creating a site-specific rule
 
 Site-specific rules live in the `remote-config` repo (privacy-configuration). Follow the
-`/autofill-site-specific-settings` skill (in `remote-config/.cursor/skills/`) for detailed instructions.
+`/autofill-site-specific-settings` skill (in `remote-config/.agents/skills/`) for detailed instructions.
 
 Quick reference:
 
