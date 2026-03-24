@@ -418,8 +418,8 @@ which has its own box-shadow and border-radius settings.
 }
 
 /* Icons - outline icons use mask for theming, brand icons use background-image */
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before {
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before {
     background-color: var(--icon-color);
     -webkit-mask-image: url('../img/key.svg');
     mask-image: url('../img/key.svg');
@@ -428,6 +428,12 @@ which has its own box-shadow and border-radius settings.
     background-color: var(--icon-color);
     -webkit-mask-image: url('../img/key-login.svg');
     mask-image: url('../img/key-login.svg');
+}
+.tooltip__button--data--credentials.tooltip__button--data--passkey::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--passkey::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/passkey.svg');
+    mask-image: url('../img/passkey.svg');
 }
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before {
     background-color: var(--icon-color);
@@ -482,9 +488,11 @@ which has its own box-shadow and border-radius settings.
 /* /Payment Provider Icons */
 
 @media (prefers-color-scheme: dark) {
-    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
-    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before,
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
     .tooltip__button--data--credentials__new::before,
+    .tooltip__button--data--credentials.tooltip__button--data--passkey::before,
+    .tooltip__button--data--credentials__current.tooltip__button--data--passkey::before,
     .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before,
     .tooltip__button--credentials-import::before,
     .tooltip__button--totp::before {
@@ -492,15 +500,19 @@ which has its own box-shadow and border-radius settings.
     }
 }
 
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
 .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
 .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
 .tooltip__button--totp:is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
 .tooltip__button--data--credentials__new:active::before,
+.tooltip__button--data--credentials.tooltip__button--data--passkey:active::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--passkey:active::before,
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
 .tooltip__button--credentials-import:active::before,
 .tooltip__button--totp:active::before {
@@ -508,15 +520,19 @@ which has its own box-shadow and border-radius settings.
 }
 
 @media (prefers-color-scheme: dark) {
-    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
-    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
     .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
+    .tooltip__button--data--credentials__current.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
     .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
     .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
     .tooltip__button--totp:is(:hover, .currentFocus)::before,
-    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
-    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
     .tooltip__button--data--credentials__new:active::before,
+    .tooltip__button--data--credentials.tooltip__button--data--passkey:active::before,
+    .tooltip__button--data--credentials__current.tooltip__button--data--passkey:active::before,
     .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
     .tooltip__button--credentials-import:active::before,
     .tooltip__button--totp:active::before {
