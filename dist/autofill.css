@@ -609,49 +609,39 @@
   background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMjYgNGMzLjMxMzcgMCA2IDIuNjg2MjkgNiA2djEyYzAgMy4zMTM3LTIuNjg2MyA2LTYgNmgtMjBjLTMuMzEzNzEgMC01Ljk5OTk5OTAyLTIuNjg2My01Ljk5OTk5ODg4LTZsLjAwMDAwMDUzLTEyYy4wMDAwMDAxNC0zLjMxMzcxIDIuNjg2Mjg4MzUtNiA1Ljk5OTk5ODM1LTZ6IiBmaWxsPSIjMDA2ZmNmIi8+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMzAgMjJ2LTEyYzAtMi4yMDkxNC0xLjc5MDktNC00LTRoLTIwYy0yLjIwOTE0IDAtNCAxLjc5MDg2LTQgNHYxMmMwIDIuMjA5MSAxLjc5MDg2IDQgNCA0aDIwYzIuMjA5MSAwIDQtMS43OTA5IDQtNHptMi0xMmMwLTMuMzEzNzEtMi42ODYzLTYtNi02aC0yMGMtMy4zMTM3MSAwLTUuOTk5OTk4MjEgMi42ODYyOS01Ljk5OTk5ODM1IDZsLS4wMDAwMDA1MyAxMmMtLjAwMDAwMDE0IDMuMzEzNyAyLjY4NjI4ODg4IDYgNS45OTk5OTg4OCA2aDIwYzMuMzEzNyAwIDYtMi42ODYzIDYtNnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjE4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjYuNTcwMiAxNC45MjY1aDIuMTIwMnYtNC45MjY1aC0yLjMwNzN2LjY4NmwtLjQzNjYtLjY4NmgtMS45OTU1di44NzMxbC0uMzc0Mi0uODczMWgtMy42NzkyYy0uMTI0OCAwLS4yNDk1LjA2MjQtLjM3NDIuMDYyNHMtLjE4NzEuMDYyMy0uMzExOC4xMjQ3Yy0uMTI0Ny4wNjIzLS4xODcxLjA2MjMtLjMxMTguMTI0N3YtLjMxMThoLTEwLjUzOWwtLjMxMTguODEwNy0uMzExODEtLjgxMDdoLTIuNDk0NDN2Ljg3MzFsLS4zNzQxNi0uODczMWgtMS45OTU1NWwtLjg3MzA1IDIuMTIwM3YyLjgwNjJoMS40MzQzbC4yNDk0NC0uNjg2aC40OTg4OWwuMjQ5NDQuNjg2aDEwLjk3NTUzdi0uNjIzNmwuNDM2NS42MjM2aDMuMDU1N3YtLjM3NDJjLjA2MjMuMDYyNC4xODcxLjA2MjQuMjQ5NC4xMjQ4LjA2MjQuMDYyMy4xODcxLjA2MjMuMjQ5NS4xMjQ3LjEyNDcuMDYyMy4yNDk0LjA2MjMuMzc0MS4wNjIzaDIuMjQ1bC4yNDk1LS42ODU5aC40OTg4bC4yNDk1LjY4NTloMy4wNTU3di0uNjIzNnptMy40Mjk4IDYuMjM2MXYtNC42MTQ3aC0xNy4xNDkybC0uNDM2NS42MjM2LS40MzY2LS42MjM2aC00Ljk4ODg0djQuOTI2NWg0Ljk4ODg0bC40MzY2LS42MjM2LjQzNjUuNjIzNmgzLjExOHYtMS4wNjAxaC0uMTI0N2MuNDM2NSAwIC44MTA3LS4wNjI0IDEuMTIyNS0uMTg3MXYxLjMwOTVoMi4yNDV2LS42MjM2bC40MzY1LjYyMzZoOS4yOTE4Yy4zNzQxLS4xMjQ3Ljc0ODMtLjE4NyAxLjA2MDEtLjM3NDF6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTI4LjkzOTkgMTkuOTc3N2gtMS42ODM4di42ODZoMS42MjE0Yy42ODYgMCAxLjEyMjUtLjQzNjYgMS4xMjI1LTEuMDYwMnMtLjM3NDItLjkzNTQtLjk5NzgtLjkzNTRoLS43NDgzYy0uMTg3MSAwLS4zMTE4LS4xMjQ3LS4zMTE4LS4zMTE4cy4xMjQ3LS4zMTE4LjMxMTgtLjMxMThoMS40MzQzbC4zMTE4LS42ODU5aC0xLjY4MzdjLS42ODYgMC0xLjEyMjUuNDM2NS0xLjEyMjUuOTk3NyAwIC42MjM2LjM3NDEuOTM1NC45OTc3LjkzNTRoLjc0ODRjLjE4NyAwIC4zMTE4LjEyNDguMzExOC4zMTE4LjA2MjMuMjQ5NS0uMDYyNC4zNzQyLS4zMTE4LjM3NDJ6bS0zLjA1NTcgMGgtMS42ODM4di42ODZoMS42MjE0Yy42ODYgMCAxLjEyMjUtLjQzNjYgMS4xMjI1LTEuMDYwMnMtLjM3NDEtLjkzNTQtLjk5NzgtLjkzNTRoLS43NDgzYy0uMTg3MSAwLS4zMTE4LS4xMjQ3LS4zMTE4LS4zMTE4cy4xMjQ3LS4zMTE4LjMxMTgtLjMxMThoMS40MzQzbC4zMTE4LS42ODU5aC0xLjY4MzdjLS42ODYgMC0xLjEyMjUuNDM2NS0xLjEyMjUuOTk3NyAwIC42MjM2LjM3NDEuOTM1NC45OTc4LjkzNTRoLjc0ODNjLjE4NzEgMCAuMzExOC4xMjQ4LjMxMTguMzExOC4wNjI0LjI0OTUtLjEyNDcuMzc0Mi0uMzExOC4zNzQyem0tMi4xODI2LTEuOTk1NXYtLjY4NmgtMi42MTkydjMuMzA1MWgyLjYxOTJ2LS42ODZoLTEuODcwOXYtLjY4NTloMS44MDg1di0uNjg2aC0xLjgwODV2LS42MjM2aDEuODcwOXptLTQuMjQwNiAwYy4zMTE4IDAgLjQzNjYuMTg3LjQzNjYuMzc0MXMtLjEyNDguMzc0Mi0uNDM2Ni4zNzQyaC0uOTM1NHYtLjgxMDd6bS0uOTM1NCAxLjQzNDNoLjM3NDJsLjk5NzggMS4xODQ4aC45MzU0bC0xLjEyMjUtMS4yNDcyYy41NjEyLS4xMjQ3Ljg3My0uNDk4OS44NzMtLjk5NzggMC0uNjIzNi0uNDM2NS0xLjA2MDEtMS4xMjI1LTEuMDYwMWgtMS43NDYxdjMuMzA1MWguNzQ4NHptLTEuOTk1NS0uOTk3OGMwIC4yNDk0LS4xMjQ4LjQzNjUtLjQzNjYuNDM2NWgtLjk5Nzd2LS44NzNoLjkzNTRjLjMxMTggMCAuNDk4OS4xODcuNDk4OS40MzY1em0tMi4xODI3LTEuMTIyNXYzLjMwNTFoLjc0ODR2LTEuMTIyNWguOTk3N2MuNjg2IDAgMS4xODQ5LS40MzY1IDEuMTg0OS0xLjEyMjUgMC0uNjIzNi0uNDM2NS0xLjEyMjUtMS4xMjI1LTEuMTIyNXptLTEuMTIyNSAzLjMwNTFoLjkzNTVsLTEuMzA5Ni0xLjY4MzcgMS4zMDk2LTEuNjIxNGgtLjkzNTVsLS44MTA2IDEuMDYwMS0uODEwNy0xLjA2MDFoLS45MzU0bDEuMzA5NSAxLjYyMTQtMS4zMDk1IDEuNjIxNGguOTM1NGwuODEwNy0xLjA2MDJ6bS0yLjgwNjItMi42MTkxdi0uNjg2aC0yLjYxOTE1djMuMzA1MWgyLjYxOTE1di0uNjg2aC0xLjg3MDgydi0uNjg1OWgxLjgwODQydi0uNjg2aC0xLjgwODQydi0uNjIzNmgxLjg3MDgyem0xNS4xNTM3LTUuODYyIDEuMzA5NiAxLjk5NTZoLjkzNTR2LTMuMzA1MWgtLjc0ODR2Mi4xODI2bC0uMTg3LS4zMTE4LTEuMTg0OS0xLjg3MDhoLS45OTc4djMuMzA1MWguNzQ4NHYtMi4yNDV6bS0zLjI0MjgtLjA2MjMuMjQ5NS0uNjg2LjI0OTQuNjg2LjMxMTguNzQ4M2gtMS4xMjI1em0xLjMwOTYgMi4wNTc5aC44MTA3bC0xLjQzNDMtMy4zMDUxaC0uOTk3OGwtMS40MzQzIDMuMzA1MWguODEwN2wuMzExOC0uNjg2aDEuNjIxNHptLTMuNDkyMiAwIC4zMTE4LS42ODZoLS4xODcxYy0uNTYxMiAwLS44NzMtLjM3NDEtLjg3My0uOTM1NHYtLjA2MjRjMC0uNTYxMi4zMTE4LS45MzU0Ljg3My0uOTM1NGguODEwN3YtLjY4NTloLS44NzNjLS45OTc4IDAtMS41NTkxLjY4NTktMS41NTkxIDEuNjIxM3YuMDYyNGMwIC45OTc4LjU2MTMgMS42MjE0IDEuNDk2NyAxLjYyMTR6bS0yLjgwNjIgMGguNzQ4M3YtMy4yNDI4aC0uNzQ4M3ptLTEuNjIxNC0yLjYxOTJjLjMxMTggMCAuNDM2NS4xODcxLjQzNjUuMzc0MnMtLjEyNDcuMzc0Mi0uNDM2NS4zNzQyaC0uOTM1NHYtLjgxMDd6bS0uOTM1NCAxLjQzNDNoLjM3NDFsLjk5NzggMS4xODQ5aC45MzU0bC0xLjEyMjUtMS4yNDcyYy41NjEzLS4xMjQ3Ljg3MzEtLjQ5ODkuODczMS0uOTk3OCAwLS42MjM2LS40MzY2LTEuMDYwMS0xLjEyMjUtMS4wNjAxaC0xLjc0NjF2My4zMDUxaC43NDgzem0tMS4zNzItMS40MzQzdi0uNjg1OWgtMi42MTkxdjMuMzA1MWgyLjYxOTF2LS42ODZoLTEuODcwOHYtLjY4NTloMS44MDg1di0uNjg2aC0xLjgwODV2LS42MjM2aDEuODcwOHptLTUuNjc0ODEgMi42MTkyaC42ODU5N2wuOTM1NDEtMi42ODE1djIuNjgxNWguNzQ4MzN2LTMuMzA1MWgtMS4yNDcyMWwtLjc0ODMzIDIuMjQ1LS43NDgzMy0yLjI0NWgtMS4yNDcyMnYzLjMwNTFoLjc0ODMzdi0yLjY4MTV6bS00LjA1MzQ1LTIuMDU3OS4yNDk0NC0uNjg2LjI0OTQ1LjY4Ni4zMTE4Ljc0ODNoLTEuMTIyNDl6bTEuMzA5NTggMi4wNTc5aC44MTA2OWwtMS40MzQzLTMuMzA1MWgtLjkzNTQxbC0xLjQzNDMgMy4zMDUxaC44MTA2OWwuMzExOC0uNjg2aDEuNjIxMzl6IiBmaWxsPSIjMDA2ZmNmIi8+PC9zdmc+);
 }
 @media (prefers-color-scheme: dark) {
-  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
-  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before,
   .tooltip__button--data--credentials__new::before,
-  .tooltip__button--data--credentials.tooltip__button--data--passkey::before,
-  .tooltip__button--data--credentials__current.tooltip__button--data--passkey::before,
   .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before,
   .tooltip__button--credentials-import::before,
   .tooltip__button--totp::before {
     background-color: var(--icon-color-dark);
   }
 }
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
 .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
 .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
 .tooltip__button--totp:is(:hover, .currentFocus)::before,
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
 .tooltip__button--data--credentials__new:active::before,
-.tooltip__button--data--credentials.tooltip__button--data--passkey:active::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--passkey:active::before,
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
 .tooltip__button--credentials-import:active::before,
 .tooltip__button--totp:active::before {
   background-color: var(--hover-color-primary);
 }
 @media (prefers-color-scheme: dark) {
-  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
-  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):is(:hover, .currentFocus)::before,
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
   .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
-  .tooltip__button--data--credentials.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
-  .tooltip__button--data--credentials__current.tooltip__button--data--passkey:is(:hover, .currentFocus)::before,
   .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
   .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
   .tooltip__button--totp:is(:hover, .currentFocus)::before,
-  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
-  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey):active::before,
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
   .tooltip__button--data--credentials__new:active::before,
-  .tooltip__button--data--credentials.tooltip__button--data--passkey:active::before,
-  .tooltip__button--data--credentials__current.tooltip__button--data--passkey:active::before,
   .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
   .tooltip__button--credentials-import:active::before,
   .tooltip__button--totp:active::before {
