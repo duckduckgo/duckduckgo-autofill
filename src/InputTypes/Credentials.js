@@ -50,13 +50,13 @@ class PasskeyCredentialsTooltipItem {
     }
     id = () => String(this.#data.id);
     /** @param {import('../locales/strings.js').TranslateFn} t */
-    labelMedium = (t) => {
+    labelMedium = (_t) => {
         if (this.#data.username) {
             return this.#data.username;
         }
 
         if (this.#data.origin?.url) {
-            return t('autofill:passwordForUrl', { url: truncateFromMiddle(this.#data.origin.url) });
+            return truncateFromMiddle(this.#data.origin.url);
         }
 
         return '';
