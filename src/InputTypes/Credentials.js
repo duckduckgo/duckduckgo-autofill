@@ -61,13 +61,11 @@ class PasskeyCredentialsTooltipItem {
 
         return '';
     };
-    label = () => this.#data.providerText ?? '';
     labelSmall = () => {
-        if (this.#data.origin?.url) {
-            return truncateFromMiddle(this.#data.origin.url);
-        }
-
-        return '';
+        const lines = [];
+        if (this.#data.providerText) lines.push(this.#data.providerText);
+        if (this.#data.origin?.url) lines.push(truncateFromMiddle(this.#data.origin.url));
+        return lines;
     };
     credentialsProvider = () => 'passkey';
 }

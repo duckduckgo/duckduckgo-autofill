@@ -97,7 +97,11 @@ ${css}
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium truncate">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
-                    ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
+                    ${labelSmall
+                        ? (Array.isArray(labelSmall) ? labelSmall : [labelSmall])
+                              .map((s) => `<span class="label label--small">${escapeXML(s)}</span>`)
+                              .join('')
+                        : ''}
                 </span>
             </button>
         `;

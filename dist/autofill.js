@@ -2603,12 +2603,11 @@ Source: "${matchedFrom}"`;
         }
         return "";
       });
-      __publicField(this, "label", () => __privateGet(this, _data2).providerText ?? "");
       __publicField(this, "labelSmall", () => {
-        if (__privateGet(this, _data2).origin?.url) {
-          return truncateFromMiddle(__privateGet(this, _data2).origin.url);
-        }
-        return "";
+        const lines = [];
+        if (__privateGet(this, _data2).providerText) lines.push(__privateGet(this, _data2).providerText);
+        if (__privateGet(this, _data2).origin?.url) lines.push(truncateFromMiddle(__privateGet(this, _data2).origin.url));
+        return lines;
       });
       __publicField(this, "credentialsProvider", () => "passkey");
       __privateSet(this, _data2, data);
@@ -14275,7 +14274,7 @@ ${css}
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium truncate">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ""}
-                    ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ""}
+                    ${labelSmall ? (Array.isArray(labelSmall) ? labelSmall : [labelSmall]).map((s) => `<span class="label label--small">${escapeXML(s)}</span>`).join("") : ""}
                 </span>
             </button>
         `;
