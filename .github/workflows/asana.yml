@@ -17,9 +17,9 @@ jobs:
             - uses: actions/checkout@v4
             - uses: duckduckgo/action-asana-sync@v11
               with:
-                  ASANA_ACCESS_TOKEN: ${{ secrets.ASANA_ACCESS_TOKEN }}
+                  ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
                   ASANA_WORKSPACE_ID: ${{ secrets.ASANA_WORKSPACE_ID }}
-                  ASANA_PROJECT_ID: ${{ vars.ASANA_PROJECT_ID }}
+                  ASANA_PROJECT_ID: '1198964220583541'
                   GITHUB_PAT: ${{ secrets.GH_RO_PAT }}
                   USER_MAP: ${{ vars.USER_MAP }}
                   ASSIGN_PR_AUTHOR: 'true'
