@@ -5343,6 +5343,12 @@ Source: "${matchedFrom}"`;
     return "";
   };
   var canBeInteractedWith = (input) => !input.readOnly && !input.disabled;
+  var hasDropdownIndicators = (input) => {
+    if (input.getAttribute("role") === "combobox") return true;
+    if (input.hasAttribute("aria-haspopup")) return true;
+    if (input.list) return true;
+    return false;
+  };
   var canBeAutofilled = async (input, device) => {
     const mainType = getInputMainType(input);
     if (mainType === "unknown") return false;
@@ -5417,6 +5423,12 @@ Source: "${matchedFrom}"`;
       getIconFilled: getIdentitiesIcon,
       getIconAlternate: getIdentitiesAlternateIcon,
       shouldDecorate: async (input, { device }) => {
+        if (input instanceof HTMLInputElement) {
+          const subtype = getInputSubtype(input);
+          if ((subtype === "addressProvince" || subtype === "addressCountryCode") && hasDropdownIndicators(input)) {
+            return false;
+          }
+        }
         return canBeAutofilled(input, device);
       },
       dataType: "Identities",
