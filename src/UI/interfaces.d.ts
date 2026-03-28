@@ -8,7 +8,7 @@ interface TooltipItemRenderer {
     id(): string;
     labelMedium(t: TranslateFn, subtype: string): string;
     label?(t: TranslateFn, subtype: string): string | null | undefined;
-    labelSmall?(t: TranslateFn, subtype: string): string | null | undefined;
+    labelSmall?(t: TranslateFn, subtype: string): string | string[] | null | undefined;
     credentialsProvider?(): CredentialsObject['credentialsProvider'];
     paymentProvider?(): CreditCardObject['paymentProvider'];
 }

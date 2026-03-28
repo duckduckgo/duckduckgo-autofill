@@ -418,8 +418,8 @@ which has its own box-shadow and border-radius settings.
 }
 
 /* Icons - outline icons use mask for theming, brand icons use background-image */
-.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
-.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before {
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before {
     background-color: var(--icon-color);
     -webkit-mask-image: url('../img/key.svg');
     mask-image: url('../img/key.svg');
@@ -428,6 +428,12 @@ which has its own box-shadow and border-radius settings.
     background-color: var(--icon-color);
     -webkit-mask-image: url('../img/key-login.svg');
     mask-image: url('../img/key-login.svg');
+}
+.tooltip__button--data--credentials.tooltip__button--data--passkey::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--passkey::before {
+    background-color: var(--icon-color);
+    -webkit-mask-image: url('../img/passkey.svg');
+    mask-image: url('../img/passkey.svg');
 }
 .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before {
     background-color: var(--icon-color);
