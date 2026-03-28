@@ -88,9 +88,8 @@ export function handleFocusEvent(forms, settings, attachKeyboardCallback, e) {
         attachKeyboardCallback({ form, element: targetElement });
     }
 
-    if (settings.featureToggles.autocomplete_attribute_support) {
-        setAutocompleteOnIdentityField(targetElement);
-    }
+    // Always set autocomplete attribute on identity fields
+    setAutocompleteOnIdentityField(targetElement);
 }
 
 /**

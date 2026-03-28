@@ -301,9 +301,8 @@ class InterfacePrototype {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
         }
 
-        if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
-            this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
-        }
+        // Always initialize focus API for autocomplete attribute support and optional input_focus_api
+        this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
     }
 
     async init() {
