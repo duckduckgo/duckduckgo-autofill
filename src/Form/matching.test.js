@@ -153,6 +153,11 @@ describe('matching', () => {
             subtype: 'identities.firstName',
         },
         {
+            // email field with webauthn autocomplete token should be classified as credentials
+            html: `<input type="email" autocomplete="username webauthn" />`,
+            subtype: 'credentials.username',
+        },
+        {
             // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
