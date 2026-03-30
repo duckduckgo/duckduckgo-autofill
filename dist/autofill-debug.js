@@ -866,6 +866,9 @@ Source: "${matchedFrom}"`;
           if (opts.isLogin || opts.isHybrid) {
             return "credentials.username";
           }
+          if (input.matches('[autocomplete~="webauthn" i]')) {
+            return "credentials.username";
+          }
           if (window.location.href.includes("https://accounts.google.com/v3/signin/identifier") && input.matches("[type=email][autocomplete=username]")) {
             return "credentials.username";
           }

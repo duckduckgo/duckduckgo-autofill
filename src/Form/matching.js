@@ -285,6 +285,12 @@ class Matching {
                     return 'credentials.username';
                 }
 
+                // Fields carrying the explicit `webauthn` autocomplete token are passkey-eligible
+                // and should be treated as credential fields regardless of form type.
+                if (input.matches('[autocomplete~="webauthn" i]')) {
+                    return 'credentials.username';
+                }
+
                 // TODO: Temporary hack to support Google signin in different languages
                 // https://app.asana.com/0/1198964220583541/1201650539303898/f
                 if (
