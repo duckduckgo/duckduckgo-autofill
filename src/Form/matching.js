@@ -267,6 +267,12 @@ class Matching {
                 }
             }
 
+            // Fields carrying the explicit `webauthn` autocomplete token are passkey-eligible
+            // and should be treated as credential fields regardless of form type.
+            if (input.matches('[autocomplete~="webauthn" i]')) {
+                return 'credentials.username';
+            }
+
             if (this.subtypeFromMatchers('emailAddress', input)) {
                 if (!this.isInputLargeEnough('emailAddress', input)) {
                     if (shouldLog()) {
@@ -282,12 +288,6 @@ class Matching {
                     //     return 'identities.emailAddress'
                     // }
 
-                    return 'credentials.username';
-                }
-
-                // Fields carrying the explicit `webauthn` autocomplete token are passkey-eligible
-                // and should be treated as credential fields regardless of form type.
-                if (input.matches('[autocomplete~="webauthn" i]')) {
                     return 'credentials.username';
                 }
 

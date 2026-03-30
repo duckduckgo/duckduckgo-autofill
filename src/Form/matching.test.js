@@ -158,6 +158,11 @@ describe('matching', () => {
             subtype: 'credentials.username',
         },
         {
+            // non-email field with webauthn autocomplete token should still be credentials
+            html: `<input type="text" autocomplete="webauthn" />`,
+            subtype: 'credentials.username',
+        },
+        {
             // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
