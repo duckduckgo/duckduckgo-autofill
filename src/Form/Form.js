@@ -311,11 +311,16 @@ class Form {
     }
 
     redecorateAllInputs() {
+        // Pass shouldCheckForDecorate=false so that inputs skipped during the initial
+        // decoration pass are still visited. This happens when getAvailableInputTypes
+        // returns false at init time but is later updated — e.g. after a passkey rpId is
+        // registered and the native side reports matching passkeys are now available.
+        // decorateInput handles its own shouldDecorate check internally.
         this.execOnInputs((input) => {
             if (input instanceof HTMLInputElement) {
                 this.decorateInput(input);
             }
-        });
+        }, 'all', false);
     }
 
     /**
