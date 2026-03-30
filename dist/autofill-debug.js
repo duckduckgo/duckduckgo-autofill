@@ -5758,7 +5758,7 @@ Source: "${matchedFrom}"`;
         if (input instanceof HTMLInputElement) {
           this.decorateInput(input);
         }
-      });
+      }, "all", false);
     }
     /**
      * Removes all scoring attributes from the inputs and deletes them from memory
