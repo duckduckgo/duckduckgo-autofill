@@ -81,5 +81,17 @@ describe('CredentialsImport', () => {
                 },
             });
         });
+
+        it('should not attach tooltip when prompting is disabled', async () => {
+            jest.spyOn(device, 'attachTooltip');
+            device.uiController = {
+                removeTooltip: jest.fn(),
+            };
+
+            await credentialsImport.refresh(newAvailableInputTypes, { shouldPrompt: false });
+
+            expect(device.attachTooltip).not.toHaveBeenCalled();
+            expect(device.uiController.removeTooltip).not.toHaveBeenCalled();
+        });
     });
 });

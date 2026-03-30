@@ -65,7 +65,7 @@ class PasskeyCredentialsTooltipItem {
         const lines = [];
         if (this.#data.providerText) lines.push(this.#data.providerText);
         if (this.#data.origin?.url) lines.push(truncateFromMiddle(this.#data.origin.url));
-        return lines;
+        return lines.length ? lines : null;
     };
     credentialsProvider = () => 'passkey';
 }

@@ -42,14 +42,18 @@ class CredentialsImport {
 
     /**
      * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     * @param {{ shouldPrompt?: boolean }} [options]
      */
-    async refresh(availableInputTypes) {
+    async refresh(availableInputTypes, options = {}) {
+        const { shouldPrompt = true } = options;
         const inputTypes = availableInputTypes || (await this.device.settings.getAvailableInputTypes());
         this.device.settings.setAvailableInputTypes(inputTypes);
 
         // Re-decorate all inputs to show the input decorations
         // Include other forms too, as credentials might now be available in other forms.
         this.device.scanner.forms.forEach((form) => form.redecorateAllInputs());
+
+        if (!shouldPrompt) return;
 
         // Make sure the tooltip is closed before we try to open it
         this.device.uiController?.removeTooltip('interface');
