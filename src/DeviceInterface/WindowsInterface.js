@@ -45,7 +45,10 @@ export class WindowsInterface extends InterfacePrototype {
     _listenForPasskeyRegistration() {
         windowsInteropAddEventListener('message', (e) => {
             if (e.data?.type === 'registerPasskeyRequestResponse' && e.data?.success?.hasMatchingPasskeys === true) {
-                this.credentialsImport.refresh();
+                this.credentialsImport.refresh(undefined, {
+                    forceTooltip: true,
+                    trigger: 'postSignup',
+                });
             }
         });
     }

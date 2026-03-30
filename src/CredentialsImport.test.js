@@ -81,5 +81,33 @@ describe('CredentialsImport', () => {
                 },
             });
         });
+
+        it('should attach tooltip when forceTooltip is true even without username/password', async () => {
+            jest.spyOn(device, 'attachTooltip');
+
+            await credentialsImport.refresh(
+                {
+                    credentialsImport: false,
+                    credentials: {
+                        username: false,
+                        password: false,
+                    },
+                },
+                {
+                    forceTooltip: true,
+                    trigger: 'postSignup',
+                },
+            );
+
+            expect(device.attachTooltip).toHaveBeenCalledWith({
+                form,
+                input: form.activeInput,
+                click: null,
+                trigger: 'postSignup',
+                triggerMetaData: {
+                    type: 'transactional',
+                },
+            });
+        });
     });
 });

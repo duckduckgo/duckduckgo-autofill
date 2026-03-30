@@ -42,8 +42,13 @@ class CredentialsImport {
 
     /**
      * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     * @param {{
+     *   forceTooltip?: boolean,
+     *   trigger?: import("./deviceApiCalls/__generated__/validators-ts").GetAutofillDataRequest['trigger'],
+     * }} [options]
      */
-    async refresh(availableInputTypes) {
+    async refresh(availableInputTypes, options = {}) {
+        const { forceTooltip = false, trigger = 'credentialsImport' } = options;
         const inputTypes = availableInputTypes || (await this.device.settings.getAvailableInputTypes());
         this.device.settings.setAvailableInputTypes(inputTypes);
 
@@ -61,14 +66,14 @@ class CredentialsImport {
         const { activeInput } = activeForm;
 
         const { username, password } = this.device.settings.availableInputTypes.credentials || {};
-        if (activeInput && (username || password)) {
+        if (activeInput && (forceTooltip || username || password)) {
             // Attach tooltip again to force prompt the credentials prompt,
             // if username or password become available.
             this.device.attachTooltip({
                 form: activeForm,
                 input: activeInput,
                 click: null,
-                trigger: 'credentialsImport',
+                trigger,
                 triggerMetaData: {
                     type: 'transactional',
                 },
