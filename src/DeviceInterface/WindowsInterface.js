@@ -33,6 +33,21 @@ export class WindowsInterface extends InterfacePrototype {
     postInit() {
         super.postInit();
         this.ready = true;
+        this._listenForPasskeyRegistration();
+    }
+
+    /**
+     * Listens for registerPasskeyRequestResponse messages posted by the native side
+     * after a passkey rpId is registered. When matching passkeys become available,
+     * re-queries getAvailableInputTypes and re-decorates fields so that the autofill
+     * dropdown appears even if the initial query returned no credentials.
+     */
+    _listenForPasskeyRegistration() {
+        windowsInteropAddEventListener('message', (e) => {
+            if (e.data?.type === 'registerPasskeyRequestResponse' && e.data?.success?.hasMatchingPasskeys === true) {
+                this.credentialsImport.refresh();
+            }
+        });
     }
 
     createUIController() {
