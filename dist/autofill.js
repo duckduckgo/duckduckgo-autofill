@@ -5415,7 +5415,8 @@ Source: "${matchedFrom}"`;
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         if (subtype === "password" && variant === "new" || // New passord field
-        isLogin || isHybrid || variant === "current") {
+        isLogin || isHybrid || variant === "current" || // Current password field
+        input.matches('[autocomplete~="webauthn" i]')) {
           return isCredentialsImportAvailable || canBeAutofilled(input, device);
         }
         return false;

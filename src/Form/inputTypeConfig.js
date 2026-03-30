@@ -139,7 +139,8 @@ const inputTypeConfig = {
                 (subtype === 'password' && variant === 'new') || // New passord field
                 isLogin ||
                 isHybrid ||
-                variant === 'current' // Current password field
+                variant === 'current' || // Current password field
+                input.matches('[autocomplete~="webauthn" i]') // Passkey conditional UI
             ) {
                 // Check feature flags and available input types
                 return isCredentialsImportAvailable || canBeAutofilled(input, device);
