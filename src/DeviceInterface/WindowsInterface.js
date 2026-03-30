@@ -34,13 +34,6 @@ export class WindowsInterface extends InterfacePrototype {
         super.postInit();
         this.ready = true;
         this._listenForPasskeyRegistration();
-        this._listenForAllMessages();
-    }
-
-    _listenForAllMessages() {
-        windowsInteropAddEventListener('message', (e) => {
-            console.log('📩 windows interop RECV (global):', e.data);
-        });
     }
 
     /**

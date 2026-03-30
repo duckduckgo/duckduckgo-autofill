@@ -18,13 +18,11 @@ export class WindowsTransport extends DeviceApiTransport {
  * @param {CallOptions} [options]
  */
 function windowsTransport(deviceApiCall, options) {
-    const message = {
+    windowsInteropPostMessage({
         Feature: 'Autofill',
         Name: deviceApiCall.method,
         Data: deviceApiCall.params,
-    };
-    console.log('📤 windows interop SEND:', deviceApiCall.method, message);
-    windowsInteropPostMessage(message);
+    });
     return {
         /**
          * Sends a message and returns a Promise that resolves with the response
@@ -52,12 +50,12 @@ function waitForWindowsResponse(responseId, options) {
 
         // The event handler
         const handler = (event) => {
+            // console.log(`📩 windows, ${window.location.href}`, [event.origin, JSON.stringify(event.data)])
             if (!event.data) {
                 console.warn('data absent from message');
                 return;
             }
             if (event.data.type === responseId) {
-                console.log('📥 windows interop RECV (matched):', responseId, event.data);
                 teardown();
                 resolve(event.data);
             }
