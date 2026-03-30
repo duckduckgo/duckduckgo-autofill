@@ -23,6 +23,11 @@ export class WindowsInterface extends InterfacePrototype {
     /** @type {AbortController|null} */
     _abortController = null;
 
+    async init() {
+        this._listenForPasskeyRegistration();
+        return super.init();
+    }
+
     async setupAutofill() {
         const loggedIn = await this._getIsLoggedIn();
         if (loggedIn) {
@@ -33,7 +38,6 @@ export class WindowsInterface extends InterfacePrototype {
     postInit() {
         super.postInit();
         this.ready = true;
-        this._listenForPasskeyRegistration();
     }
 
     /**
@@ -41,6 +45,13 @@ export class WindowsInterface extends InterfacePrototype {
      * after a passkey rpId is registered. When matching passkeys become available,
      * re-queries getAvailableInputTypes and re-decorates fields so that the autofill
      * dropdown appears even if the initial query returned no credentials.
+     *
+     * Must be called before settings.refresh() to avoid a race with C-S-S:
+     * C-S-S sends the passkey request during its own init, and the native response
+     * can arrive before autofill finishes its async initialisation. If the message
+     * arrives before the scanner has scanned forms, the refresh still updates the
+     * cached availableInputTypes, so the subsequent scanner pass sees the correct
+     * values and decorates fields on the first try.
      */
     _listenForPasskeyRegistration() {
         windowsInteropAddEventListener('message', (e) => {
