@@ -9910,7 +9910,6 @@ Source: "${matchedFrom}"`;
       Name: deviceApiCall.method,
       Data: deviceApiCall.params
     };
-    console.log("\u{1F4E4} windows interop SEND:", deviceApiCall.method, message);
     windowsInteropPostMessage(message);
     return {
       /**
@@ -9935,7 +9934,6 @@ Source: "${matchedFrom}"`;
           return;
         }
         if (event.data.type === responseId) {
-          console.log("\u{1F4E5} windows interop RECV (matched):", responseId, event.data);
           teardown();
           resolve(event.data);
         }
@@ -15634,12 +15632,6 @@ ${this.options.css}
       super.postInit();
       this.ready = true;
       this._listenForPasskeyRegistration();
-      this._listenForAllMessages();
-    }
-    _listenForAllMessages() {
-      windowsInteropAddEventListener("message", (e) => {
-        console.log("\u{1F4E9} windows interop RECV (global):", e.data);
-      });
     }
     /**
      * Listens for registerPasskeyRequestResponse messages posted by the native side

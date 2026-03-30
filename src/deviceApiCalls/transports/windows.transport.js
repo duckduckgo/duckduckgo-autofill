@@ -23,7 +23,6 @@ function windowsTransport(deviceApiCall, options) {
         Name: deviceApiCall.method,
         Data: deviceApiCall.params,
     };
-    console.log('📤 windows interop SEND:', deviceApiCall.method, message);
     windowsInteropPostMessage(message);
     return {
         /**
@@ -57,7 +56,6 @@ function waitForWindowsResponse(responseId, options) {
                 return;
             }
             if (event.data.type === responseId) {
-                console.log('📥 windows interop RECV (matched):', responseId, event.data);
                 teardown();
                 resolve(event.data);
             }
