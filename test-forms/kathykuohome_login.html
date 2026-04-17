@@ -1,0 +1,47 @@
+<!-- https://www.kathykuohome.com/Account/Login?returnURL=/MyAccount/Index -->
+<form action="/Account/Login" id="iqform" method="post" name="iqform">
+  <input name="__RequestVerificationToken" type="hidden" value="" />
+  <input id="Checkout" name="Checkout" type="hidden" value="false" />
+  <input id="ProcessMode" name="ProcessMode" type="hidden" value="" />
+
+  <div id="KKH-Login-Left">
+    <div id="KKH-Login-Customer">
+      <h2><span>Returning Customer:</span> Sign in</h2>
+      <div class="KKH-Login-Form">
+        <div class="login-label"><label for="EmailAddress">Email Address</label></div>
+        <div class="login-field">
+          <input id="EmailAddress" name="EmailAddress" type="text" value="" data-manual-scoring="username" />
+        </div>
+        <div class="login-label"><label for="Password">Password</label></div>
+        <div class="login-field">
+          <input id="Password" name="Password" type="password" data-manual-scoring="password.current" />
+        </div>
+        <button type="button" id="sign_in_button" data-manual-submit>SIGN IN</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="KKH-Login-Right">
+    <div id="KKH-Signup-Customer">
+      <h2><span>new customer</span>: Create a New Account</h2>
+      <div class="KKH-Login-Form">
+        <div class="login-label">
+          <label for="Reg_Password">Password *</label>
+          <span>(minimum of 6 characters)</span>
+        </div>
+        <div class="login-field">
+          <input id="Reg_Password" name="Reg_Password" type="password" data-manual-scoring="password.new" />
+        </div>
+        <div class="login-label"><label for="Reg_ConfirmPassword">Confirm Password *</label></div>
+        <div class="login-field">
+          <input
+            id="Reg_ConfirmPassword"
+            name="Reg_ConfirmPassword"
+            type="password"
+            data-manual-scoring="password.new"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -424,6 +424,16 @@ class Matching {
         // Check attributes first
         // This is done mainly to ensure coverage for all languages, since attributes are usually in English
         const attrsToCheck = [input.autocomplete, input.name, input.id];
+        if (
+            attrsToCheck.some((str) =>
+                safeRegexTest(
+                    /reg(istration)?[_-]?password|confirm.?password|password.?confirm|signup.?password|create.?password/i,
+                    str,
+                ),
+            )
+        ) {
+            return 'credentials.password.new';
+        }
         if (opts.isSignup && attrsToCheck.some((str) => safeRegexTest(/new.?password|password.?new/i, str))) {
             return 'credentials.password.new';
         }
