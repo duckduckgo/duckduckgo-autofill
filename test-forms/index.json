@@ -563,5 +563,6 @@
   { "html": "nutracheck_login.html" },
   { "html": "municipay_login.html" },
   { "html": "kathykuohome_login.html" },
+  { "html": "carta_login.html" },
   { "html": "autodesk_signup.html" }
 ]
