@@ -56,7 +56,7 @@ class PasskeyCredentialsTooltipItem {
         }
 
         if (this.#data.origin?.url) {
-            return t('autofill:passwordForUrl', { url: truncateFromMiddle(this.#data.origin.url) });
+            return truncateFromMiddle(this.#data.origin.url);
         }
 
         return '';
