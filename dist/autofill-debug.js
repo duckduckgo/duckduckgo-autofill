@@ -856,6 +856,9 @@ Source: "${matchedFrom}"`;
             return this.inferPasswordVariant(input, opts);
           }
         }
+        if (input.matches('[autocomplete~="webauthn" i]')) {
+          return "credentials.username";
+        }
         if (this.subtypeFromMatchers("emailAddress", input)) {
           if (!this.isInputLargeEnough("emailAddress", input)) {
             if (shouldLog()) {
@@ -864,9 +867,6 @@ Source: "${matchedFrom}"`;
             return "unknown";
           }
           if (opts.isLogin || opts.isHybrid) {
-            return "credentials.username";
-          }
-          if (input.matches('[autocomplete~="webauthn" i]')) {
             return "credentials.username";
           }
           if (window.location.href.includes("https://accounts.google.com/v3/signin/identifier") && input.matches("[type=email][autocomplete=username]")) {
@@ -2600,13 +2600,13 @@ Source: "${matchedFrom}"`;
       /** @type {CredentialsObject} */
       __privateAdd(this, _data2);
       __publicField(this, "id", () => String(__privateGet(this, _data2).id));
-      /** @param {import('../locales/strings.js').TranslateFn} t */
-      __publicField(this, "labelMedium", (t) => {
+      /** @param {import('../locales/strings.js').TranslateFn} _t */
+      __publicField(this, "labelMedium", (_t3) => {
         if (__privateGet(this, _data2).username) {
           return __privateGet(this, _data2).username;
         }
         if (__privateGet(this, _data2).origin?.url) {
-          return t("autofill:passwordForUrl", { url: truncateFromMiddle(__privateGet(this, _data2).origin.url) });
+          return truncateFromMiddle(__privateGet(this, _data2).origin.url);
         }
         return "";
       });
@@ -2614,8 +2614,9 @@ Source: "${matchedFrom}"`;
         const lines = [];
         if (__privateGet(this, _data2).providerText) lines.push(__privateGet(this, _data2).providerText);
         if (__privateGet(this, _data2).origin?.url) lines.push(truncateFromMiddle(__privateGet(this, _data2).origin.url));
-        return lines;
+        return lines.length > 0 ? lines : null;
       });
+      /** @returns {CredentialsObject['credentialType']} */
       __publicField(this, "credentialsProvider", () => "passkey");
       __privateSet(this, _data2, data);
     }
@@ -17463,12 +17464,21 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
+     * Re-query available input types from the native side and re-decorate all
+     * inputs so that newly available credential types (e.g. passkeys) are
+     * reflected in the UI without triggering the credentials-import prompt.
      * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
      */
-    async refresh(availableInputTypes) {
+    async refreshAvailableInputTypes(availableInputTypes) {
       const inputTypes = availableInputTypes || await this.device.settings.getAvailableInputTypes();
       this.device.settings.setAvailableInputTypes(inputTypes);
       this.device.scanner.forms.forEach((form) => form.redecorateAllInputs());
+    }
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+      await this.refreshAvailableInputTypes(availableInputTypes);
       this.device.uiController?.removeTooltip("interface");
       const activeForm = this.device.activeForm;
       if (!activeForm) return;
@@ -20125,7 +20135,7 @@ ${this.options.css}
     _listenForPasskeyRegistration() {
       windowsInteropAddEventListener("message", (e) => {
         if (e.data?.type === "registerPasskeyRequestResponse" && e.data?.success?.hasMatchingPasskeys === true) {
-          this.credentialsImport.refresh();
+          this.credentialsImport.refreshAvailableInputTypes();
         }
       });
     }
