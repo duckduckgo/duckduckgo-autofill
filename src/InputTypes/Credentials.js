@@ -49,8 +49,8 @@ class PasskeyCredentialsTooltipItem {
         this.#data = data;
     }
     id = () => String(this.#data.id);
-    /** @param {import('../locales/strings.js').TranslateFn} t */
-    labelMedium = (t) => {
+    /** @param {import('../locales/strings.js').TranslateFn} _t */
+    labelMedium = (_t) => {
         if (this.#data.username) {
             return this.#data.username;
         }
@@ -67,6 +67,7 @@ class PasskeyCredentialsTooltipItem {
         if (this.#data.origin?.url) lines.push(truncateFromMiddle(this.#data.origin.url));
         return lines;
     };
+    /** @returns {CredentialsObject['credentialType']} */
     credentialsProvider = () => 'passkey';
 }
 
