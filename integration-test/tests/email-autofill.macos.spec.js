@@ -187,6 +187,7 @@ test.describe('macos', () => {
             const addressCity = 'city2';
 
             await selectInput.navigate();
+            await page.waitForSelector('select#address-city[data-ddg-inputtype]');
             await selectInput.selectOption(addressCity);
             await selectInput.selectFirstName(identity.firstName);
             await page.waitForTimeout(100);
@@ -204,6 +205,7 @@ test.describe('macos', () => {
             const addressCity = 'city2';
 
             await selectInput.navigate('selectInput', formWithLabel);
+            await page.waitForSelector('form#with-label select#address-city[data-ddg-inputtype]');
             await selectInput.selectOption(addressCity, formWithLabel);
             await selectInput.selectFirstName(identity.firstName, formWithLabel);
             await page.waitForTimeout(100);
