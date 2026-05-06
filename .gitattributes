@@ -1,1 +1,8 @@
+# Default to LF line endings for all text files, regardless of contributor OS.
+# Prevents Windows checkouts (with core.autocrlf=true) from baking CRLFs into
+# source files that copy-assets.js then propagates verbatim into dist/.
+* text=auto eol=lf
+
+# Treat dist/ as binary so git stores bytes verbatim and shows it as
+# generated in linguist stats.
 dist/** binary linguist-generated
