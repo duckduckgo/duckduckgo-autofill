@@ -488,8 +488,8 @@ which has its own box-shadow and border-radius settings.
 /* /Payment Provider Icons */
 
 @media (prefers-color-scheme: dark) {
-    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
-    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before,
+    .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
+    .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):not(.tooltip__button--data--passkey)::before,
     .tooltip__button--data--credentials__new::before,
     .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before,
     .tooltip__button--credentials-import::before,
