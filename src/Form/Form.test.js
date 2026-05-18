@@ -871,3 +871,34 @@ describe('Password variant recategorization', () => {
         expect(password3.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
     });
 });
+
+describe('Webauthn passkey decoration', () => {
+    test('field with autocomplete="username webauthn" gets decorated on a non-login form when credentials are available', async () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="email-field" type="email" autocomplete="username webauthn" />
+                <button type="submit">Next</button>
+            </form>`);
+
+        const deviceInterface = InterfacePrototype.default();
+        deviceInterface.settings.setFeatureToggles({
+            inputType_credentials: true,
+        });
+        deviceInterface.settings.setAvailableInputTypes({
+            credentials: { username: true, password: false },
+        });
+
+        const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isLogin).toBeFalsy();
+
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('email-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+
+        // decorateInput is async — flush microtasks before asserting
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(input.getAttribute(constants.ATTR_AUTOFILL)).toBe('true');
+    });
+});

@@ -41,15 +41,25 @@ class CredentialsImport {
     }
 
     /**
+     * Re-query available input types from the native side and re-decorate all
+     * inputs so that newly available credential types (e.g. passkeys) are
+     * reflected in the UI without triggering the credentials-import prompt.
      * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
      */
-    async refresh(availableInputTypes) {
+    async refreshAvailableInputTypes(availableInputTypes) {
         const inputTypes = availableInputTypes || (await this.device.settings.getAvailableInputTypes());
         this.device.settings.setAvailableInputTypes(inputTypes);
 
         // Re-decorate all inputs to show the input decorations
         // Include other forms too, as credentials might now be available in other forms.
         this.device.scanner.forms.forEach((form) => form.redecorateAllInputs());
+    }
+
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+        await this.refreshAvailableInputTypes(availableInputTypes);
 
         // Make sure the tooltip is closed before we try to open it
         this.device.uiController?.removeTooltip('interface');
