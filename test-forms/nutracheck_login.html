@@ -1,0 +1,37 @@
+<!-- https://www.nutracheck.co.uk/Home -->
+<form id="dietuserloginnav" action="/Support/login" name="dietuserlogin" method="post" role="form">
+  <input type="hidden" name="lasturl" value="" />
+  <input type="hidden" name="time" id="tztime" value="" />
+  <div class="form-group">
+    <label for="enterEmailBnr" class="sr-only">Enter your email</label>
+    <input
+      type="text"
+      id="enterEmailBnr"
+      name="Email"
+      class="form-control input-lg"
+      placeholder="Nutracheck email"
+      data-manual-scoring="username"
+    />
+  </div>
+  <div class="form-group">
+    <label for="enterPWBnr" class="sr-only">Enter your password</label>
+    <input
+      type="password"
+      id="enterPWBnr"
+      name="Password"
+      class="form-control input-lg"
+      placeholder="Password"
+      data-manual-scoring="password.current"
+    />
+  </div>
+  <div class="text-right textSmall">
+    <a href="/Support/PasswordForgot"><span class="colorGrayDark">forgotten password</span></a>
+  </div>
+  <div id="remMe">
+    <input type="checkbox" value="1" id="RememberMe" name="RememberMe" />
+    <label for="RememberMe" class="colorGrayDark">Keep me signed in</label>
+  </div>
+  <div class="contentCenterAlign">
+    <button class="btn btn-success" type="submit" data-manual-submit>Sign in</button>
+  </div>
+</form>
