@@ -1,0 +1,14 @@
+<!--
+  Reported issue:
+  StubHub sign-in could be scored as signup when broad commercial title text
+  outweighed weak login hints.
+-->
+<form>
+  <label for="stubhub-email">Email</label>
+  <input id="stubhub-email" type="email" data-testid="sign-in-email" data-manual-scoring="username">
+
+  <label for="stubhub-password">Password</label>
+  <input id="stubhub-password" type="password" data-manual-scoring="password">
+
+  <button type="submit" data-manual-submit></button>
+</form>
