@@ -361,6 +361,39 @@ describe('Check form has focus', () => {
     });
 });
 
+describe('Form analyzer signal balancing', () => {
+    test('prefers login classification for login URLs despite broad commercial page titles', () => {
+        const originalTitle = document.title;
+        const originalPath = window.location.pathname;
+
+        window.history.replaceState({}, '', '/secure/login');
+        document.title = 'StubHub - Buy & Sell Concert, Sport & Theatre Tickets: ?';
+
+        const formEl = attachAndReturnGenericForm(`
+            <form>
+                <label for="stubhub-email">Email</label>
+                <input id="stubhub-email" type="email" />
+                <label for="stubhub-password">Password</label>
+                <input id="stubhub-password" type="password" />
+                <button type="submit"></button>
+            </form>`);
+
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const formClass = scanner.forms.get(formEl);
+
+        expect(formClass?.isLogin).toBeTruthy();
+        expect(formClass?.isSignup).toBeFalsy();
+
+        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('stubhub-email'));
+        const passwordInput = /** @type {HTMLInputElement} */ (document.getElementById('stubhub-password'));
+        expect(emailInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+        expect(passwordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.current');
+
+        window.history.replaceState({}, '', originalPath);
+        document.title = originalTitle;
+    });
+});
+
 describe('Attempt form submission when needed', () => {
     const submitHandler = jest.fn((e) => e.preventDefault());
 
