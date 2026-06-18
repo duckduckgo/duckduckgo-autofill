@@ -4116,7 +4116,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
     },
     "fc2.com": {
-      "password-rules": "minlength: 8; maxlength: 16;"
+      "password-rules": "minlength: 8; maxlength: 16; allowed: upper, lower, digit;"
     },
     "fccaccessonline.com": {
       "password-rules": "minlength: 8; maxlength: 14; max-consecutive: 3; required: lower; required: upper; required: digit; required: [!#$%*^_];"
@@ -4548,7 +4548,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [+_%@!$*~];"
     },
     "mysedgwick.com": {
-      "password-rules": "minlength: 8; maxlength: 16; allowed: lower; required: upper; required: digit; required: [@#%^&+=!]; allowed: [-~_$.,;]"
+      "password-rules": "minlength: 8; maxlength: 16; allowed: lower; required: upper; required: digit; required: [@#$%^&+=!];"
     },
     "mysubaru.com": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,./:;=?@\\^`~];"
