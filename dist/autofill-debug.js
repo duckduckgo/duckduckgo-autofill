@@ -4131,6 +4131,9 @@ Source: "${matchedFrom}"`;
     "fidelity.com": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [-!$%'()+,./:;=?@\\^_|~];"
     },
+    "flyertalk.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [-@#_$%^&!~?*];"
+    },
     "flysas.com": {
       "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&_+=`|(){}[:\"'<>,.?]];"
     },
@@ -4334,6 +4337,9 @@ Source: "${matchedFrom}"`;
     },
     "hkexpress.com": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: special;"
+    },
+    "home.cards.citidirect.com": {
+      "password-rules": "minlength: 8; maxlength: 18; required: lower, upper; required: digit; allowed: [#@$!%^&*(),~`.;:\"'?/];"
     },
     "hotels.com": {
       "password-rules": "minlength: 6; maxlength: 20; required: digit; required: [-~#@$%&!*_?^]; allowed: lower, upper;"
@@ -4584,6 +4590,9 @@ Source: "${matchedFrom}"`;
     "online.schoolsfirstfcu.org": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [-!#$%'()*+,/=?[^_`]];"
     },
+    "orange.fr": {
+      "password-rules": "minlength: 8; required: upper; required: lower; required: digit; allowed: [-,.;+:!?_];"
+    },
     "order.wendys.com": {
       "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; allowed: [!#$%&()*+/=?^_{}];"
     },
@@ -4595,6 +4604,9 @@ Source: "${matchedFrom}"`;
     },
     "parksmarter.com": {
       "password-rules": "minlength: 8; maxlength: 50; required: upper; required: digit; required: [!@#$%^&]; allowed: lower;"
+    },
+    "patient.massciportal.com": {
+      "password-rules": "minlength: 12; required: upper; required: lower; required: digit; required: [!@#$%^&];"
     },
     "pavilions.com": {
       "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
@@ -4772,6 +4784,9 @@ Source: "${matchedFrom}"`;
     },
     "starmarket.com": {
       "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
+    },
+    "stayhealthy.at": {
+      "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
     },
     "store.nintendo.co.uk": {
       "password-rules": "minlength: 8; maxlength: 20;"
