@@ -560,5 +560,6 @@
   { "html": "acehardware_com_checkout.html", "title": "Ace Hardware - Checkout", "expectedSubmitFalseNegatives": 1 },
   { "html": "distrokid_payout.html" },
   { "html": "qobuz_com_shopping_cart.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "stubhub_login.html", "title": "StubHub - Buy & Sell Concert, Sport & Theatre Tickets: ?" },
   { "html": "autodesk_signup.html" }
 ]

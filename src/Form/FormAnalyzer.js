@@ -217,7 +217,14 @@ class FormAnalyzer {
 
     evaluatePageTitle() {
         const pageTitle = document.title;
-        this.updateSignal({ string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true });
+        this.updateSignal({
+            string: pageTitle,
+            strength: 2,
+            signalType: `page title: ${pageTitle}`,
+            shouldCheckUnifiedForm: true,
+            // Titles often contain broad commerce text (eg. "Buy & Sell") that can bias login pages to signup.
+            shouldBeConservative: true,
+        });
     }
 
     evaluatePageHeadings() {
