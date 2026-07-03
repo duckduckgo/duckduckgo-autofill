@@ -5298,6 +5298,10 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     isCCForm() {
+      const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+      if (forcedFormType) {
+        return forcedFormType === "cc";
+      }
       if (this._isCCForm !== void 0) return this._isCCForm;
       const formEl = this.form;
       const ccFieldSelector = this.matching.joinCssSelectors("cc");
