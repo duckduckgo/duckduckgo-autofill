@@ -408,6 +408,13 @@ class FormAnalyzer {
      * @returns {boolean}
      */
     isCCForm() {
+        // A site-specific config can force the form type. When present it takes
+        // precedence over inference, mirroring isLogin/isSignup/isHybrid.
+        const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+        if (forcedFormType) {
+            return forcedFormType === 'cc';
+        }
+
         if (this._isCCForm !== undefined) return this._isCCForm;
 
         const formEl = this.form;
