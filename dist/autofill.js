@@ -4614,7 +4614,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
     },
     "pay.citizensbank.com": {
-      "password-rules": "minlength: 8; maxlength: 24; required: lower; required: upper; required: digit; allowed: [@!#];"
+      "password-rules": "minlength: 8; maxlength: 24; required: lower; required: upper; required: digit; allowed: [!#$%&*@];"
     },
     "paypal.com": {
       "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit, [!@#$%^&*()];"
@@ -4684,6 +4684,9 @@ Source: "${matchedFrom}"`;
     },
     "qdosstatusreview.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&@^];"
+    },
+    "qualtrics.com": {
+      "password-rules": "minlength: 8; required: [!@#$%]; allowed: lower, upper, digit;"
     },
     "questdiagnostics.com": {
       "password-rules": "minlength: 8; maxlength: 30; required: upper, lower; required: digit, [!#$%&()*+<>?@^_~];"
@@ -4759,6 +4762,9 @@ Source: "${matchedFrom}"`;
     },
     "servizioelettriconazionale.it": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [!#$%&*?@^_~];"
+    },
+    "sevasindhuservices.karnataka.gov.in": {
+      "password-rules": "minlength: 9; required: lower; required: upper; required: digit; required: [!@#$%^&*];"
     },
     "sfwater.org": {
       "password-rules": "minlength: 10; maxlength: 30; required: digit; allowed: lower, upper, [!@#$%*()_+^}{:;?.];"
