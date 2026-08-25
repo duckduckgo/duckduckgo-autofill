@@ -21,6 +21,12 @@ const matchingConfiguration = {
                     ddgMatcher: 'totp',
                 },
             },
+            emailOrPhone: {
+                type: 'emailOrPhone',
+                strategies: {
+                    ddgMatcher: 'emailOrPhone',
+                },
+            },
             emailAddress: {
                 type: 'emailAddress',
                 strategies: {
@@ -203,7 +209,7 @@ const matchingConfiguration = {
         lists: {
             unknown: ['unknown'],
             totp: ['totp'],
-            emailAddress: ['emailAddress'],
+            emailAddress: ['emailOrPhone', 'emailAddress'],
             password: ['password'],
             username: ['username'],
             cc: ['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'],
@@ -251,6 +257,18 @@ const matchingConfiguration = {
                 totp: {
                     match: 'mfa|2fa|(two|2).?factor|one-time|otp|totp',
                     skip: 'phone|mobile|email|password',
+                },
+                // Some fields accept either a phone number or an email address, e.g. Instagram's
+                // "Mobile number or email". We resolve the ambiguity in favour of email, because Email
+                // Protection can always provide an address, while a phone number is only ever offered
+                // when the user has one saved.
+                emailOrPhone: {
+                    match:
+                        '(phone|mobile|telefono|cellulare).*(.mail\\b|posta elettronica|e.?mailadres|correo electr|\\be.?post)' +
+                        '|(.mail\\b|posta elettronica|e.?mailadres|correo electr|\\be.?post).*(phone|mobile|telefono|cellulare)',
+                    // `relatedText` is deliberately left out: it often pulls in surrounding copy mentioning
+                    // both an email address and a phone number when the field itself only accepts one of them.
+                    matchableStrings: ['nameAttr', 'labelText', 'placeholderAttr'],
                 },
                 emailAddress: {
                     match:

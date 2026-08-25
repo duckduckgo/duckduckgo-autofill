@@ -193,6 +193,30 @@ describe('matching', () => {
             subtype: 'credentials.password.current',
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
+        {
+            // fields accepting either a phone number or an email address are treated as email
+            html: `<label for="contact">Mobile number or email</label><input type="text" id="contact" />`,
+            subtype: 'identities.emailAddress',
+        },
+        {
+            html: `<label for="contact">Email or phone</label><input type="text" id="contact" />`,
+            subtype: 'identities.emailAddress',
+        },
+        {
+            html: `<input type="text" placeholder="Phone number or email address" />`,
+            subtype: 'identities.emailAddress',
+        },
+        {
+            // on a login form the same field still resolves to credentials
+            html: `<label for="contact">Mobile number or email</label><input type="text" id="contact" />`,
+            subtype: 'credentials.username',
+            opts: { isLogin: true },
+        },
+        {
+            // a phone-only field is unaffected, even when the form mentions email elsewhere
+            html: `<p>We'll send a confirmation email to you</p><label for="tel">Mobile number</label><input type="text" id="tel" />`,
+            subtype: 'identities.phone',
+        },
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args;
         const { formElement, inputs } = setFormHtml(html);

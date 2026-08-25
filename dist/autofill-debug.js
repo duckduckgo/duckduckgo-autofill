@@ -152,6 +152,10 @@
           type: "totp",
           strategies: { cssSelector: "totp", ddgMatcher: "totp" }
         },
+        emailOrPhone: {
+          type: "emailOrPhone",
+          strategies: { ddgMatcher: "emailOrPhone" }
+        },
         emailAddress: {
           type: "emailAddress",
           strategies: {
@@ -319,7 +323,7 @@
       lists: {
         unknown: ["unknown"],
         totp: ["totp"],
-        emailAddress: ["emailAddress"],
+        emailAddress: ["emailOrPhone", "emailAddress"],
         password: ["password"],
         username: ["username"],
         cc: [
@@ -391,6 +395,10 @@
           totp: {
             match: /mfa|2fa|(two|2).?factor|one-time|otp|totp/iu,
             skip: /phone|mobile|email|password/iu
+          },
+          emailOrPhone: {
+            match: /(phone|mobile|telefono|cellulare).*(.mail\b|posta elettronica|e.?mailadres|correo electr|\be.?post)|(.mail\b|posta elettronica|e.?mailadres|correo electr|\be.?post).*(phone|mobile|telefono|cellulare)/iu,
+            matchableStrings: ["nameAttr", "labelText", "placeholderAttr"]
           },
           emailAddress: {
             match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,

@@ -22,6 +22,7 @@
   { "html": "yelp_signup.html" },
   { "html": "instagram_login.html" },
   { "html": "instagram_signup.html" },
+  { "html": "instagram_signup-meta.html", "expectedFailures": ["username"], "expectedSubmitFalseNegatives": 1 },
   { "html": "ebay_login.html" },
   { "html": "ebay_signup.html" },
   { "html": "ebay_checkout.html", "expectedFailures": ["unknown", "unknown"] },

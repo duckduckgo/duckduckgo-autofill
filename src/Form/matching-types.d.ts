@@ -32,6 +32,7 @@ interface MatcherConfiguration {
 type MatcherTypeNames =
     | 'unknown'
     | 'emailAddress'
+    | 'emailOrPhone'
     | 'password'
     | 'totp'
     | 'newPassword'
