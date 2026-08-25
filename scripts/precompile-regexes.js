@@ -8,11 +8,14 @@ const { inspect } = require('util');
  */
 
 /**
- * Loop through Object.entries and transform all values to RegExp
+ * Loop through Object.entries and transform the regex sources to RegExp.
+ * Other options, like `matchableStrings` and `maxDigits`, are passed through untouched.
  * @param {Object} obj
  */
 function convertAllValuesToRegex(obj) {
+    const regexProps = ['match', 'skip', 'forceUnknown'];
     for (const [key, value] of Object.entries(obj)) {
+        if (!regexProps.includes(key)) continue;
         const source = String(value).normalize('NFKC');
         obj[key] = new RegExp(source, 'ui');
     }
