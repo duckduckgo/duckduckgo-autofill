@@ -485,10 +485,10 @@
             match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
           },
           conservativeSignupRegex: {
-            match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
+            match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|\bsubscri(be|ption)|settings|preferences|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
           },
           resetPasswordLink: {
-            match: /(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
+            match: /(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten|password dimenticata|dimenticat[oa] (la )?password|reset(?:ta) password|recuper[ao] password|(passwort|kennwort) (vergessen|verloren|verlegt|zurücksetzen|wiederherstellen)|(vergessene?s?|verlorene?s?|verlegte?s?) (passwort|kennwort)|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó|aste|é|ado)( (su|tu|mi|la))? (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
           },
           loginProvidersRegex: { match: / with | con | mit | met | avec /iu },
           passwordHintsRegex: {
@@ -5234,6 +5234,24 @@ Source: "${matchedFrom}"`;
       };
       return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest("a"));
     }
+    /**
+     * Checks whether the element's text belongs to a checkbox or radio. Such text describes
+     * that single option — marketing consent, terms, a delivery choice — rather than the
+     * purpose of the form, and phrases like "you may unsubscribe at any time" otherwise
+     * register as login and signup signals at once.
+     * @param {HTMLElement} el
+     * @returns {boolean}
+     */
+    isCheckboxOrRadioLabel(el) {
+      const optionSelector = "input[type=checkbox], input[type=radio]";
+      const label = el.closest("label");
+      if (!label) return false;
+      if (label.querySelector(optionSelector)) return true;
+      const controlId = label.getAttribute("for");
+      if (!controlId) return false;
+      const control = label.ownerDocument?.getElementById(controlId);
+      return Boolean(control?.matches?.(optionSelector));
+    }
     evaluateElement(el) {
       const string = getTextShallow(el);
       if (el.matches(this.matching.cssSelector("password"))) {
@@ -5278,6 +5296,7 @@ Source: "${matchedFrom}"`;
         }
         this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
       } else {
+        if (this.isCheckboxOrRadioLabel(el)) return;
         const isH1Element = el.tagName === "H1";
         this.updateSignal({ string, strength: isH1Element ? 3 : 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
       }
@@ -5998,6 +6017,23 @@ Source: "${matchedFrom}"`;
         if (shouldLog()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
       }
     }
+    recategorizeDualPurposeContactInputs() {
+      const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+      const canAutofillEmail = this.device.settings.canAutofillType(
+        { mainType: "identities", subtype: "emailAddress", variant: "" },
+        this.device.inContextSignup
+      );
+      if (hasPhoneData || !canAutofillEmail) return;
+      const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === "phone");
+      for (const input of phoneInputs) {
+        const elementStrings = Object.values(this.matching.getElementStrings(input, this.form)).join(" ");
+        const acceptsPhone = /\b(?:phone|mobile)\b/i.test(elementStrings);
+        const acceptsEmail = /\be-?mail\b/i.test(elementStrings);
+        if (!acceptsPhone || !acceptsEmail) continue;
+        input.setAttribute(ATTR_INPUT_TYPE2, "identities.emailAddress");
+        this.decorateInput(input);
+      }
+    }
     /**
      * Recategorizes the new/current password field variant
      */
@@ -6034,6 +6070,7 @@ Source: "${matchedFrom}"`;
         }
       }
       if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+      this.recategorizeDualPurposeContactInputs();
       if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
       if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
         this.destroy();
