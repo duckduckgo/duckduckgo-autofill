@@ -991,11 +991,15 @@ describe('Reset password links in other languages', () => {
         'Kennwort vergessen?',
         'Passwort zurücksetzen',
         'vergessenes Passwort',
-        // Other languages that already had the correct word order
+        // Italian and Spanish also use verb forms rather than only the adjectival one
         'Password dimenticata?',
+        'Hai dimenticato la password?',
+        '¿Olvidaste tu contraseña?',
+        '¿Has olvidado tu contraseña?',
+        'Recuperar contraseña',
+        // Languages that already had full coverage
         'Mot de passe oublié ?',
         'Wachtwoord vergeten?',
-        '¿Olvidaste tu contraseña?',
         'Glömt lösenord?',
     ];
 

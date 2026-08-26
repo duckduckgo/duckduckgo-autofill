@@ -443,8 +443,8 @@ const matchingConfiguration = {
                 resetPasswordLink: {
                     match:
                         "(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten" +
-                        // Italian
-                        '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
+                        // Italian. Also the verb form, as in "Hai dimenticato la password?".
+                        '|password dimenticata|dimenticat[oa] (la )?password|reset(?:ta) password|recuper[ao] password' +
                         // German. The noun comes first ("Passwort vergessen"), with the
                         // adjectival order ("vergessenes Passwort") as a less common variant.
                         '|(passwort|kennwort) (vergessen|verloren|verlegt|zurücksetzen|wiederherstellen)' +
@@ -453,8 +453,8 @@ const matchingConfiguration = {
                         '|wachtwoord (vergeten|reset)' +
                         // French
                         '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' +
-                        // Spanish
-                        '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' +
+                        // Spanish. "olvidado" is the participle used in "¿Has olvidado tu contraseña?".
+                        '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó|aste|é|ado)( (su|tu|mi|la))? (contraseña|clave)|recordar( su)? (contraseña|clave)' +
                         // Swedish
                         '|glömt lösenord|återställ lösenord',
                 },
