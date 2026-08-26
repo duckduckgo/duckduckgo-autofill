@@ -77,6 +77,25 @@ describe('vendor-regexes matching', () => {
     });
 });
 
+describe('signup regexes and "unsubscribe"', () => {
+    // "unsubscribe" contains "subscribe", so without a word boundary it reads as a signup
+    // at the same time as loginRegex reads it as a login, which forces a hybrid form.
+    const notSignup = ['Unsubscribe', 'unsubscribe from emails', 'You may unsubscribe at any time'];
+    const isSignup = ['Subscribe', 'Subscription', 'Newsletter'];
+
+    it.each(notSignup)('"%s" is not a signup signal', (text) => {
+        const matching = createMatching();
+        expect(matching.getDDGMatcherRegex('signupRegex').test(text)).toBe(false);
+        expect(matching.getDDGMatcherRegex('conservativeSignupRegex').test(text)).toBe(false);
+    });
+
+    it.each(isSignup)('"%s" is still a signup signal', (text) => {
+        const matching = createMatching();
+        expect(matching.getDDGMatcherRegex('signupRegex').test(text)).toBe(true);
+        expect(matching.getDDGMatcherRegex('conservativeSignupRegex').test(text)).toBe(true);
+    });
+});
+
 describe('matching', () => {
     beforeAll(() => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});

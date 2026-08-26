@@ -426,7 +426,8 @@ const matchingConfiguration = {
                 },
                 conservativeSignupRegex: {
                     match:
-                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|update' +
+                        // \b so that "unsubscribe" is not read as a signup, matching signupRegex
+                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|\\bsubscri(be|ption)|settings|preferences|update' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
                         // German
