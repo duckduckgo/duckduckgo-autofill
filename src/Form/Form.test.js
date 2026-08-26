@@ -500,6 +500,56 @@ describe('Form re-categorizes inputs', () => {
             expect(form?.inputs.identities.size).toBe(1);
         });
 
+        test('when a dual-purpose phone or email field has no phone data and email signup is available', () => {
+            const deviceWithEmailSignup = InterfacePrototype.default();
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <label>Mobile number or email<input type="text" /></label>
+                <input type="password" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+            deviceWithEmailSignup.settings.setAvailableInputTypes({
+                email: false,
+                identities: {
+                    phone: false,
+                },
+            });
+            deviceWithEmailSignup.inContextSignup = {
+                isAvailable: (inputType) => inputType === 'emailAddress',
+            };
+
+            const scanner = createScanner(deviceWithEmailSignup).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            const contactInput = formEl.querySelector('input[type="text"]');
+
+            expect(contactInput?.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+            expect(form?.inputs.identities.size).toBe(1);
+        });
+
+        test('when a dual-purpose phone or email field has phone data available', () => {
+            const deviceWithPhone = InterfacePrototype.default();
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <label>Mobile number or email<input type="text" /></label>
+                <input type="password" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+            deviceWithPhone.settings.setAvailableInputTypes({
+                email: false,
+                identities: {
+                    phone: true,
+                },
+            });
+            deviceWithPhone.inContextSignup = {
+                isAvailable: (inputType) => inputType === 'emailAddress',
+            };
+
+            createScanner(deviceWithPhone).findEligibleInputs(document);
+            const contactInput = formEl.querySelector('input[type="text"]');
+
+            expect(contactInput?.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.phone');
+        });
+
         test('when form has card number input and has credit card data available', () => {
             const formEl = attachAndReturnGenericForm(`
             <form>
