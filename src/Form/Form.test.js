@@ -982,3 +982,38 @@ describe('Webauthn passkey decoration', () => {
         expect(input.getAttribute(constants.ATTR_AUTOFILL)).toBe('true');
     });
 });
+
+describe('Reset password links in other languages', () => {
+    const resetPasswordLinkTexts = [
+        'Forgot your password?',
+        // German puts the noun first, and also uses "zurücksetzen" for "reset"
+        'Passwort vergessen?',
+        'Kennwort vergessen?',
+        'Passwort zurücksetzen',
+        'vergessenes Passwort',
+        // Other languages that already had the correct word order
+        'Password dimenticata?',
+        'Mot de passe oublié ?',
+        'Wachtwoord vergeten?',
+        '¿Olvidaste tu contraseña?',
+        'Glömt lösenord?',
+    ];
+
+    test.each(resetPasswordLinkTexts)('"%s" keeps a login form classified as a login', (linkText) => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="username-field" type="text" name="username" />
+                <input id="password-field" type="password" name="password" />
+                <a href="/forgot-password">${linkText}</a>
+                <button type="submit">Continue</button>
+            </form>`);
+
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isLogin).toBe(true);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('username-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+    });
+});

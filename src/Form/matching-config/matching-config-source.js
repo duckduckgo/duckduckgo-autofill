@@ -445,8 +445,10 @@ const matchingConfiguration = {
                         "(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten" +
                         // Italian
                         '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
-                        // German
-                        '|(vergessen|verloren|verlegt|wiederherstellen) passwort' +
+                        // German. The noun comes first ("Passwort vergessen"), with the
+                        // adjectival order ("vergessenes Passwort") as a less common variant.
+                        '|(passwort|kennwort) (vergessen|verloren|verlegt|zurücksetzen|wiederherstellen)' +
+                        '|(vergessene?s?|verlorene?s?|verlegte?s?) (passwort|kennwort)' +
                         // Dutch
                         '|wachtwoord (vergeten|reset)' +
                         // French
