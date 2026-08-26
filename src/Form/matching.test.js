@@ -1,4 +1,5 @@
 import { Matching, createMatching } from './matching.js';
+import { safeRegexTest } from '../autofill-utils.js';
 
 /**
  * @typedef {{
@@ -85,14 +86,14 @@ describe('signup regexes and "unsubscribe"', () => {
 
     it.each(notSignup)('"%s" is not a signup signal', (text) => {
         const matching = createMatching();
-        expect(matching.getDDGMatcherRegex('signupRegex').test(text)).toBe(false);
-        expect(matching.getDDGMatcherRegex('conservativeSignupRegex').test(text)).toBe(false);
+        expect(safeRegexTest(matching.getDDGMatcherRegex('signupRegex'), text)).toBe(false);
+        expect(safeRegexTest(matching.getDDGMatcherRegex('conservativeSignupRegex'), text)).toBe(false);
     });
 
     it.each(isSignup)('"%s" is still a signup signal', (text) => {
         const matching = createMatching();
-        expect(matching.getDDGMatcherRegex('signupRegex').test(text)).toBe(true);
-        expect(matching.getDDGMatcherRegex('conservativeSignupRegex').test(text)).toBe(true);
+        expect(safeRegexTest(matching.getDDGMatcherRegex('signupRegex'), text)).toBe(true);
+        expect(safeRegexTest(matching.getDDGMatcherRegex('conservativeSignupRegex'), text)).toBe(true);
     });
 });
 
