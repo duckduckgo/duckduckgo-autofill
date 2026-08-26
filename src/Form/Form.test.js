@@ -543,9 +543,7 @@ describe('Form re-categorizes inputs', () => {
                 },
             });
             deviceWithPhone.inContextSignup = new InContextSignup(deviceWithPhone);
-            jest.spyOn(deviceWithPhone.inContextSignup, 'isAvailable').mockImplementation(
-                (inputType) => inputType === 'emailAddress',
-            );
+            jest.spyOn(deviceWithPhone.inContextSignup, 'isAvailable').mockImplementation((inputType) => inputType === 'emailAddress');
 
             createScanner(deviceWithPhone).findEligibleInputs(document);
             const contactInput = formEl.querySelector('input[type="text"]');
