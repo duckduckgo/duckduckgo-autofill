@@ -2,6 +2,7 @@ import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
 import { createScanner } from '../Scanner.js';
 import { attachAndReturnGenericForm, setMockSiteSpecificFixes } from '../test-utils.js';
 import { constants } from '../constants.js';
+import { InContextSignup } from '../InContextSignup.js';
 
 afterEach(() => {
     document.body.innerHTML = '';
@@ -514,9 +515,10 @@ describe('Form re-categorizes inputs', () => {
                     phone: false,
                 },
             });
-            deviceWithEmailSignup.inContextSignup = {
-                isAvailable: (inputType) => inputType === 'emailAddress',
-            };
+            deviceWithEmailSignup.inContextSignup = new InContextSignup(deviceWithEmailSignup);
+            jest.spyOn(deviceWithEmailSignup.inContextSignup, 'isAvailable').mockImplementation(
+                (inputType) => inputType === 'emailAddress',
+            );
 
             const scanner = createScanner(deviceWithEmailSignup).findEligibleInputs(document);
             const form = scanner.forms.get(formEl);
@@ -540,9 +542,10 @@ describe('Form re-categorizes inputs', () => {
                     phone: true,
                 },
             });
-            deviceWithPhone.inContextSignup = {
-                isAvailable: (inputType) => inputType === 'emailAddress',
-            };
+            deviceWithPhone.inContextSignup = new InContextSignup(deviceWithPhone);
+            jest.spyOn(deviceWithPhone.inContextSignup, 'isAvailable').mockImplementation(
+                (inputType) => inputType === 'emailAddress',
+            );
 
             createScanner(deviceWithPhone).findEligibleInputs(document);
             const contactInput = formEl.querySelector('input[type="text"]');
