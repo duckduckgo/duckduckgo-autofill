@@ -5994,6 +5994,23 @@ Source: "${matchedFrom}"`;
         if (shouldLog()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
       }
     }
+    recategorizeDualPurposeContactInputs() {
+      const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+      const canAutofillEmail = this.device.settings.canAutofillType(
+        { mainType: "identities", subtype: "emailAddress", variant: "" },
+        this.device.inContextSignup
+      );
+      if (hasPhoneData || !canAutofillEmail) return;
+      const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === "phone");
+      for (const input of phoneInputs) {
+        const elementStrings = Object.values(this.matching.getElementStrings(input, this.form)).join(" ");
+        const acceptsPhone = /\b(?:phone|mobile)\b/i.test(elementStrings);
+        const acceptsEmail = /\be-?mail\b/i.test(elementStrings);
+        if (!acceptsPhone || !acceptsEmail) continue;
+        input.setAttribute(ATTR_INPUT_TYPE2, "identities.emailAddress");
+        this.decorateInput(input);
+      }
+    }
     /**
      * Recategorizes the new/current password field variant
      */
@@ -6030,6 +6047,7 @@ Source: "${matchedFrom}"`;
         }
       }
       if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+      this.recategorizeDualPurposeContactInputs();
       if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
       if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
         this.destroy();
