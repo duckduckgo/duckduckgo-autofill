@@ -983,6 +983,64 @@ describe('Webauthn passkey decoration', () => {
     });
 });
 
+describe('Checkbox and radio labels', () => {
+    const deviceInterface = () => {
+        const device = InterfacePrototype.default();
+        device.settings.setFeatureToggles({ inputType_credentials: true, inputType_identities: true });
+        device.settings.setAvailableInputTypes({
+            credentials: { username: true, password: true },
+            identities: { emailAddress: true },
+            email: true,
+        });
+        return device;
+    };
+
+    test('a marketing consent label does not make a checkout form hybrid', () => {
+        // "unsubscribe" reads as a login signal while the "subscribe" inside it reads as a
+        // signup signal, which used to score the form as hybrid and turn the email field
+        // into credentials.username, hiding Email Protection on a checkout page.
+        attachAndReturnGenericForm(`
+            <form>
+                <label for="email-field">Email *</label>
+                <input id="email-field" type="email" name="email" placeholder="Email" />
+                <label for="consent">
+                    <input id="consent" type="checkbox" name="consent" />
+                    <span>Keep me up to date on learning opportunities and latest offers. You may unsubscribe at any time.</span>
+                </label>
+                <button type="submit">Continue</button>
+            </form>`);
+
+        const scanner = createScanner(deviceInterface()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isHybrid).toBe(false);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('email-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+    });
+
+    test('a login form is still detected when the login wording is outside a checkbox label', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="username-field" type="text" name="username" />
+                <input id="password-field" type="password" name="password" />
+                <label for="remember">
+                    <input id="remember" type="checkbox" name="remember" />
+                    <span>Keep me signed in</span>
+                </label>
+                <button type="submit">Sign in</button>
+            </form>`);
+
+        const scanner = createScanner(deviceInterface()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isLogin).toBe(true);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('username-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+    });
+});
+
 describe('Reset password links in other languages', () => {
     const resetPasswordLinkTexts = [
         'Forgot your password?',
