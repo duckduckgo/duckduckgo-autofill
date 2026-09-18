@@ -1,14 +1,18 @@
 name: 'asana sync'
+# NOTE: Automatic Asana sync is disabled. The workflow only runs when triggered
+# manually via the Actions tab. To re-enable, restore the commented triggers below
+# and remove `workflow_dispatch`.
 on:
-    pull_request_review:
-    pull_request_target:
-        types:
-            - opened
-            - edited
-            - closed
-            - reopened
-            - synchronize
-            - review_requested
+    workflow_dispatch:
+    # pull_request_review:
+    # pull_request_target:
+    #     types:
+    #         - opened
+    #         - edited
+    #         - closed
+    #         - reopened
+    #         - synchronize
+    #         - review_requested
 
 jobs:
     sync:
