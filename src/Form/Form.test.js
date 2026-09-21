@@ -731,6 +731,35 @@ describe('site specific fixes', () => {
             expect(form?.isLogin).toBeFalsy();
             expect(form?.isSignup).toBeTruthy();
         });
+        test('when a forced form (cc) type is present in the config', () => {
+            // Given a form whose card fields have no identifying attributes (labels are
+            // only associated by proximity), so it would not be detected as a CC form
+            const formEl = attachAndReturnGenericForm(`
+            <form id="checkout">
+                <div class="field">
+                    <label>Card Number</label>
+                    <div class="control"><input id="cc-number-input" type="text" /></div>
+                </div>
+                <div class="field">
+                    <label>Expiration (MM/YY)</label>
+                    <div class="control"><input id="cc-exp-input" type="text" /></div>
+                </div>
+                <button type="submit">Add</button>
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+            // And a config that forces the form to be a credit card form
+            setMockSiteSpecificFixes(deviceInterface, 'force-cc');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            // Then the form is treated as a credit card form, and not as login/signup
+            expect(form?.isCCForm).toBeTruthy();
+            expect(form?.isLogin).toBeFalsy();
+            expect(form?.isSignup).toBeFalsy();
+            // And the fields are categorized as credit card inputs
+            const cardNumberInput = /** @type {HTMLInputElement} */ (document.getElementById('cc-number-input'));
+            expect(cardNumberInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardNumber');
+        });
     });
 
     describe('Force input type', () => {
