@@ -294,6 +294,26 @@ class FormAnalyzer {
         return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest('a'));
     }
 
+    /**
+     * Checks whether the element's text belongs to a checkbox or radio. Such text describes
+     * that single option — marketing consent, terms, a delivery choice — rather than the
+     * purpose of the form, and phrases like "you may unsubscribe at any time" otherwise
+     * register as login and signup signals at once.
+     * @param {HTMLElement} el
+     * @returns {boolean}
+     */
+    isCheckboxOrRadioLabel(el) {
+        const optionSelector = 'input[type=checkbox], input[type=radio]';
+        const label = el.closest('label');
+        if (!label) return false;
+        if (label.querySelector(optionSelector)) return true;
+
+        const controlId = label.getAttribute('for');
+        if (!controlId) return false;
+        const control = label.ownerDocument?.getElementById(controlId);
+        return Boolean(control?.matches?.(optionSelector));
+    }
+
     evaluateElement(el) {
         const string = getTextShallow(el);
 
@@ -352,6 +372,8 @@ class FormAnalyzer {
             }
             this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
         } else {
+            if (this.isCheckboxOrRadioLabel(el)) return;
+
             // any other case
             const isH1Element = el.tagName === 'H1';
             this.updateSignal({ string, strength: isH1Element ? 3 : 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });

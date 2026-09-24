@@ -2,6 +2,7 @@ import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
 import { createScanner } from '../Scanner.js';
 import { attachAndReturnGenericForm, setMockSiteSpecificFixes } from '../test-utils.js';
 import { constants } from '../constants.js';
+import { InContextSignup } from '../InContextSignup.js';
 
 afterEach(() => {
     document.body.innerHTML = '';
@@ -500,6 +501,56 @@ describe('Form re-categorizes inputs', () => {
             expect(form?.inputs.identities.size).toBe(1);
         });
 
+        test('when a dual-purpose phone or email field has no phone data and email signup is available', () => {
+            const deviceWithEmailSignup = InterfacePrototype.default();
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <label>Mobile number or email<input type="text" /></label>
+                <input type="password" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+            deviceWithEmailSignup.settings.setAvailableInputTypes({
+                email: false,
+                identities: {
+                    phone: false,
+                },
+            });
+            deviceWithEmailSignup.inContextSignup = new InContextSignup(deviceWithEmailSignup);
+            jest.spyOn(deviceWithEmailSignup.inContextSignup, 'isAvailable').mockImplementation(
+                (inputType) => inputType === 'emailAddress',
+            );
+
+            const scanner = createScanner(deviceWithEmailSignup).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            const contactInput = formEl.querySelector('input[type="text"]');
+
+            expect(contactInput?.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+            expect(form?.inputs.identities.size).toBe(1);
+        });
+
+        test('when a dual-purpose phone or email field has phone data available', () => {
+            const deviceWithPhone = InterfacePrototype.default();
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <label>Mobile number or email<input type="text" /></label>
+                <input type="password" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+            deviceWithPhone.settings.setAvailableInputTypes({
+                email: false,
+                identities: {
+                    phone: true,
+                },
+            });
+            deviceWithPhone.inContextSignup = new InContextSignup(deviceWithPhone);
+            jest.spyOn(deviceWithPhone.inContextSignup, 'isAvailable').mockImplementation((inputType) => inputType === 'emailAddress');
+
+            createScanner(deviceWithPhone).findEligibleInputs(document);
+            const contactInput = formEl.querySelector('input[type="text"]');
+
+            expect(contactInput?.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.phone');
+        });
+
         test('when form has card number input and has credit card data available', () => {
             const formEl = attachAndReturnGenericForm(`
             <form>
@@ -929,5 +980,102 @@ describe('Webauthn passkey decoration', () => {
         // decorateInput is async — flush microtasks before asserting
         await new Promise((resolve) => setTimeout(resolve, 0));
         expect(input.getAttribute(constants.ATTR_AUTOFILL)).toBe('true');
+    });
+});
+
+describe('Checkbox and radio labels', () => {
+    const deviceInterface = () => {
+        const device = InterfacePrototype.default();
+        device.settings.setFeatureToggles({ inputType_credentials: true, inputType_identities: true });
+        device.settings.setAvailableInputTypes({
+            credentials: { username: true, password: true },
+            identities: { emailAddress: true },
+            email: true,
+        });
+        return device;
+    };
+
+    test('a marketing consent label does not make a checkout form hybrid', () => {
+        // "unsubscribe" reads as a login signal while the "subscribe" inside it reads as a
+        // signup signal, which used to score the form as hybrid and turn the email field
+        // into credentials.username, hiding Email Protection on a checkout page.
+        attachAndReturnGenericForm(`
+            <form>
+                <label for="email-field">Email *</label>
+                <input id="email-field" type="email" name="email" placeholder="Email" />
+                <label for="consent">
+                    <input id="consent" type="checkbox" name="consent" />
+                    <span>Keep me up to date on learning opportunities and latest offers. You may unsubscribe at any time.</span>
+                </label>
+                <button type="submit">Continue</button>
+            </form>`);
+
+        const scanner = createScanner(deviceInterface()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isHybrid).toBe(false);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('email-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+    });
+
+    test('a login form is still detected when the login wording is outside a checkbox label', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="username-field" type="text" name="username" />
+                <input id="password-field" type="password" name="password" />
+                <label for="remember">
+                    <input id="remember" type="checkbox" name="remember" />
+                    <span>Keep me signed in</span>
+                </label>
+                <button type="submit">Sign in</button>
+            </form>`);
+
+        const scanner = createScanner(deviceInterface()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isLogin).toBe(true);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('username-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+    });
+});
+
+describe('Reset password links in other languages', () => {
+    const resetPasswordLinkTexts = [
+        'Forgot your password?',
+        // German puts the noun first, and also uses "zurücksetzen" for "reset"
+        'Passwort vergessen?',
+        'Kennwort vergessen?',
+        'Passwort zurücksetzen',
+        'vergessenes Passwort',
+        // Italian and Spanish also use verb forms rather than only the adjectival one
+        'Password dimenticata?',
+        'Hai dimenticato la password?',
+        '¿Olvidaste tu contraseña?',
+        '¿Has olvidado tu contraseña?',
+        'Recuperar contraseña',
+        // Languages that already had full coverage
+        'Mot de passe oublié ?',
+        'Wachtwoord vergeten?',
+        'Glömt lösenord?',
+    ];
+
+    test.each(resetPasswordLinkTexts)('"%s" keeps a login form classified as a login', (linkText) => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="username-field" type="text" name="username" />
+                <input id="password-field" type="password" name="password" />
+                <a href="/forgot-password">${linkText}</a>
+                <button type="submit">Continue</button>
+            </form>`);
+
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const formEl = /** @type {HTMLElement} */ (document.querySelector('form'));
+        const form = scanner.forms.get(formEl);
+
+        expect(form?.isLogin).toBe(true);
+        const input = /** @type {HTMLInputElement} */ (document.getElementById('username-field'));
+        expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
     });
 });
