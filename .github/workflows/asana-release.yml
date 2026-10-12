@@ -67,7 +67,7 @@ jobs:
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
             - uses: actions/setup-node@v3
               with:
-                  node-version: current
+                  node-version-file: 'autofill/.nvmrc'
             - name: Update Android autofill reference
               run: |
                   cd android
