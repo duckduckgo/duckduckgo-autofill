@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>State dropdown autofill conflict</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
+
+    <body>
+
+        <!-- Form with combobox state input (tooltip should NOT show) -->
+        <form id="combobox-form">
+            <h2>Form: state as combobox</h2>
+            <fieldset>
+                <label for="cb-firstname">First Name</label>
+                <input id="cb-firstname" type="text" name="firstName" autocomplete="given-name">
+                <label for="cb-lastname">Last Name</label>
+                <input id="cb-lastname" type="text" name="lastName" autocomplete="family-name">
+                <label for="cb-city">City</label>
+                <input id="cb-city" type="text" name="city" autocomplete="address-level2">
+                <label for="cb-state">State</label>
+                <input
+                    id="cb-state"
+                    type="text"
+                    name="state"
+                    autocomplete="address-level1"
+                    role="combobox"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                    aria-controls="cb-state-listbox"
+                >
+                <label for="cb-zip">Postal Code</label>
+                <input id="cb-zip" type="text" name="zip" autocomplete="postal-code">
+            </fieldset>
+        </form>
+
+        <!-- Form with plain text state input (tooltip SHOULD show) -->
+        <form id="plain-text-form" style="display: none;">
+            <h2>Form: state as plain text</h2>
+            <fieldset>
+                <label for="pt-firstname">First Name</label>
+                <input id="pt-firstname" type="text" name="firstName" autocomplete="given-name">
+                <label for="pt-lastname">Last Name</label>
+                <input id="pt-lastname" type="text" name="lastName" autocomplete="family-name">
+                <label for="pt-city">City</label>
+                <input id="pt-city" type="text" name="city" autocomplete="address-level2">
+                <label for="pt-state">State</label>
+                <input id="pt-state" type="text" name="state" autocomplete="address-level1">
+                <label for="pt-zip">Postal Code</label>
+                <input id="pt-zip" type="text" name="zip" autocomplete="postal-code">
+            </fieldset>
+        </form>
+
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const formType = urlParams.get('form-type');
+
+            if (formType === 'plain-text') {
+                document.getElementById('combobox-form').style.display = 'none';
+                document.getElementById('plain-text-form').style.display = 'block';
+            }
+        </script>
+
+    </body>
+
+</html>

@@ -26,6 +26,7 @@ export const constants = {
         loginMultistep: `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         shadowDom: `${privacyTestPagesPrefix}/shadow-dom.html`,
         selectInput: `${localPagesPrefix}/select-input.html`,
+        stateDropdown: `${localPagesPrefix}/state-dropdown.html`,
         shadowInputsLogin: `${localPagesPrefix}/shadow-inputs-login.html`,
         unknownUsernameLogin: `${localPagesPrefix}/unknown-username-login.html`,
         creditCardVariousInputs: `${privacyTestPagesPrefix}/credit-card-various-inputs.html`,
@@ -60,6 +61,7 @@ export const constants = {
             lastName: 'Last',
             phone: '+1234567890',
             addressCity: 'city1',
+            addressProvince: 'PA',
         },
         creditCard: {
             id: '01',
