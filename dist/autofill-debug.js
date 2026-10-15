@@ -3714,9 +3714,6 @@ Source: "${matchedFrom}"`;
     "access.service.gov.uk": {
       "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: special;"
     },
-    "account.samsung.com": {
-      "password-rules": "minlength: 8; maxlength: 15; max-consecutive: 3; required: digit; required: special; required: upper,lower;"
-    },
     "account.xiaomi.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
     },
@@ -4742,6 +4739,9 @@ Source: "${matchedFrom}"`;
     },
     "salslimo.com": {
       "password-rules": "minlength: 8; maxlength: 50; required: upper; required: lower; required: digit; required: [!@#$&*];"
+    },
+    "samsung.com": {
+      "password-rules": "max-consecutive: 2; required: lower, upper; required: digit; required: special;"
     },
     "santahelenasaude.com.br": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [-!@#$%&*_+=<>];"
