@@ -1822,6 +1822,9 @@ Source: "${matchedFrom}"`;
     });
     return shadowElements;
   }
+  function isFormWithoutInteractiveControls(form) {
+    return !form.querySelector("input:not([type=hidden]), select, textarea, button");
+  }
   function getFormControlElements(form, selector) {
     if (form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
       const formControls = [...form.elements].filter((el) => el.matches(selector));
@@ -6641,8 +6644,10 @@ Source: "${matchedFrom}"`;
       let traversalLayerCount = 0;
       let element = input;
       while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
-        const siblingForm = element.parentElement?.querySelector("form");
-        if (siblingForm && siblingForm !== element) {
+        const siblingForm = [...element.parentElement?.querySelectorAll("form") || []].find(
+          (form) => form !== element && !isFormWithoutInteractiveControls(form)
+        );
+        if (siblingForm) {
           return element;
         }
         if (element instanceof HTMLFormElement) {

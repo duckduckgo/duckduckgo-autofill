@@ -4,6 +4,7 @@ import { createMatching } from './Form/matching.js';
 import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
+    isFormWithoutInteractiveControls,
     shouldLog,
     pierceShadowTree,
     findElementsInShadowTree,
@@ -258,8 +259,10 @@ class DefaultScanner {
         // traverse the DOM to search for related inputs
         while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
             // Avoid overlapping containers or forms
-            const siblingForm = element.parentElement?.querySelector('form');
-            if (siblingForm && siblingForm !== element) {
+            const siblingForm = [...(element.parentElement?.querySelectorAll('form') || [])].find(
+                (form) => form !== element && !isFormWithoutInteractiveControls(form),
+            );
+            if (siblingForm) {
                 return element;
             }
 
