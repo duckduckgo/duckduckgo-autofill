@@ -136,7 +136,7 @@ describe('form container detection', () => {
     });
 
     it('does not enclose a sibling form with visible inputs', () => {
-        const { emailForm, passwordForm } = scanFormlessFields(`<input type="text" name="search">`);
+        const { emailForm, passwordForm } = scanFormlessFields(`<input type="text" name="coupon">`);
         expect(emailForm).toBeDefined();
         expect(emailForm).not.toBe(document.getElementById('container'));
         expect(passwordForm).not.toBe(emailForm);

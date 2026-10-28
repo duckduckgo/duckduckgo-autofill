@@ -626,7 +626,7 @@ function findElementsInShadowTree(root, selector) {
  * @returns {boolean}
  */
 function isFormWithoutInteractiveControls(form) {
-    return !form.querySelector('input:not([type=hidden]), select, textarea, button');
+    return !form.querySelector('input:not([type=hidden]), select, button');
 }
 
 /**

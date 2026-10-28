@@ -1823,7 +1823,7 @@ Source: "${matchedFrom}"`;
     return shadowElements;
   }
   function isFormWithoutInteractiveControls(form) {
-    return !form.querySelector("input:not([type=hidden]), select, textarea, button");
+    return !form.querySelector("input:not([type=hidden]), select, button");
   }
   function getFormControlElements(form, selector) {
     if (form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
