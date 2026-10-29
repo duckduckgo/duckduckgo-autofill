@@ -620,6 +620,16 @@ function findElementsInShadowTree(root, selector) {
 }
 
 /**
+ * Determines if the form has nothing a user can interact with, e.g. a redirect or CSRF form that only holds
+ * hidden inputs. Such forms can't overlap with the fields we're scanning, so they shouldn't constrain containers.
+ * @param {HTMLFormElement} form
+ * @returns {boolean}
+ */
+function isFormWithoutInteractiveControls(form) {
+    return !form.querySelector('input:not([type=hidden]), select, button');
+}
+
+/**
  * The function looks for form's control elements, and returns them if they're iterable.
  * @param {HTMLElement} form
  * @param {string} selector
@@ -732,6 +742,7 @@ export {
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper,
+    isFormWithoutInteractiveControls,
     safeRegexTest,
     pierceShadowTree,
     getActiveElement,

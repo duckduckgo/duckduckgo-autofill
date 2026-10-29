@@ -96,3 +96,56 @@ describe('performance', () => {
         expect(document.body).toMatchSnapshot();
     });
 });
+
+describe('form container detection', () => {
+    beforeEach(() => {
+        require('./requestIdleCallback.js');
+    });
+
+    /**
+     * Formless email + password fields sharing a container with another form, then scanned
+     * @param {string} siblingFormContent
+     */
+    const scanFormlessFields = (siblingFormContent) => {
+        document.body.innerHTML = `
+            <main>
+                <div id="container">
+                    <form id="sibling-form" action="/redirect" method="post">${siblingFormContent}</form>
+                    <div><div><label for="email">Add your email</label><div><input type="text" id="email" name="email"></div></div></div>
+                    <div><div><label for="password">Choose a password</label><div><input type="password" id="password" name="password" autocomplete="new-password"></div></div></div>
+                    <button type="button">Continue with Email</button>
+                </div>
+            </main>`;
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const email = /** @type {HTMLInputElement} */ (document.getElementById('email'));
+        const password = /** @type {HTMLInputElement} */ (document.getElementById('password'));
+        const formOf = (/** @type {HTMLInputElement} */ input) => [...scanner.forms.keys()].find((formEl) => formEl.contains(input));
+        return { emailForm: formOf(email), passwordForm: formOf(password) };
+    };
+
+    it('groups fields into one form when the sibling form only has hidden inputs', () => {
+        const { emailForm, passwordForm } = scanFormlessFields(`<input type="hidden" name="referer" value="/">`);
+        expect(emailForm).toBe(document.getElementById('container'));
+        expect(passwordForm).toBe(emailForm);
+    });
+
+    it('groups fields into one form when the sibling form is empty', () => {
+        const { emailForm, passwordForm } = scanFormlessFields('');
+        expect(emailForm).toBe(document.getElementById('container'));
+        expect(passwordForm).toBe(emailForm);
+    });
+
+    it('does not enclose a sibling form with visible inputs', () => {
+        const { emailForm, passwordForm } = scanFormlessFields(`<input type="text" name="coupon">`);
+        expect(emailForm).toBeDefined();
+        expect(emailForm).not.toBe(document.getElementById('container'));
+        expect(passwordForm).not.toBe(emailForm);
+    });
+
+    it('does not enclose a sibling form with buttons', () => {
+        const { emailForm, passwordForm } = scanFormlessFields(`<button type="submit">Continue with Google</button>`);
+        expect(emailForm).toBeDefined();
+        expect(emailForm).not.toBe(document.getElementById('container'));
+        expect(passwordForm).not.toBe(emailForm);
+    });
+});
