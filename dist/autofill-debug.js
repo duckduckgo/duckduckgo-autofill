@@ -3717,6 +3717,9 @@ Source: "${matchedFrom}"`;
     "access.service.gov.uk": {
       "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: special;"
     },
+    "accor.com": {
+      "password-rules": "minlength: 10; maxlength: 20; required: lower; required: upper; required: digit; required: [!#$%&()*,.:<>?@^{|}];"
+    },
     "account.xiaomi.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
     },
@@ -3831,8 +3834,14 @@ Source: "${matchedFrom}"`;
     "asahi-net.or.jp": {
       "password-rules": "minlength: 6; maxlength: 15; required: lower; required: digit;"
     },
+    "asoview.com": {
+      "password-rules": "minlength: 6; maxlength: 20; allowed: upper, lower, digit;"
+    },
     "astonmartinf1.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
+    },
+    "asus.com": {
+      "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^?]; max-consecutive: 3;"
     },
     "auth.readymag.com": {
       "password-rules": "minlength: 8; maxlength: 128; required: lower; required: upper; allowed: special;"
@@ -3859,7 +3868,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-@#*()+={}/?~;,._];"
     },
     "battle.net": {
-      "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, special;"
+      "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, [-~!@#$%^&*_+=`|(){}[:;\"'<>,.?/]];"
     },
     "bcassessment.ca": {
       "password-rules": "minlength: 8; maxlength: 14;"
@@ -3898,7 +3907,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 30; allowed: upper,lower,digit;"
     },
     "bloomingdales.com": {
-      "password-rules": "minlength: 7; maxlength: 16; required: lower, upper; required: digit; required: [`!@#$%^&*()+~{}'\";:<>?]];"
+      "password-rules": "minlength: 7; maxlength: 16; required: lower; required: upper; required: digit; allowed: [~`!@#$%^&*(){}[:;\"'<>?+]];"
     },
     "bluesguitarunleashed.com": {
       "password-rules": "allowed: lower, upper, digit, [!$#@];"
@@ -4013,6 +4022,9 @@ Source: "${matchedFrom}"`;
     },
     "costco.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-!#$%&'()*+/:;=?@[^_`{|}~]];"
+    },
+    "coupang.com": {
+      "password-rules": "minlength: 8; maxlength: 19; max-consecutive: 2;"
     },
     "coursera.com": {
       "password-rules": "minlength: 8; maxlength: 72;"
@@ -4407,6 +4419,9 @@ Source: "${matchedFrom}"`;
     "internationalsos.com": {
       "password-rules": "required: lower; required: upper; required: digit; required: [@#$%^&+=_];"
     },
+    "investing.com": {
+      "password-rules": "minlength: 4; maxlength: 15; required: lower; required: upper; required: digit; required: digit;"
+    },
     "irctc.co.in": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
     },
@@ -4418,6 +4433,9 @@ Source: "${matchedFrom}"`;
     },
     "japanpost.jp": {
       "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
+    },
+    "jdsports.co.uk": {
+      "password-rules": 'minlength: 8; maxlength: 128; required: lower; required: upper; required: digit; required: [!@#$%^&*(),.?":{}|<>];'
     },
     "jewelosco.com": {
       "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
@@ -4536,6 +4554,9 @@ Source: "${matchedFrom}"`;
     "mlb.com": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
     },
+    "monidentifiant.sncf": {
+      "password-rules": "minlength: 12; maxlength: 72; required: lower; required: upper; required: digit; required: [!#$%&*@^];"
+    },
     "mountainwarehouse.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-@#$%^&*_+={}|\\:',?/`~\"();.];"
     },
@@ -4581,6 +4602,9 @@ Source: "${matchedFrom}"`;
     "naver.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
     },
+    "ncl.com": {
+      "password-rules": "minlength: 5; maxlength: 12;"
+    },
     "nekochat.cn": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
     },
@@ -4593,6 +4617,9 @@ Source: "${matchedFrom}"`;
     "netgear.com": {
       "password-rules": "minlength: 6; maxlength: 128; allowed: lower, upper, digit, [!@#$%^&*()];"
     },
+    "netkeiba.com": {
+      "password-rules": "minlength: 6; allowed: lower, upper, digit;"
+    },
     "networksolutions.com": {
       "password-rules": "minlength: 12; maxlength: 16;"
     },
@@ -4604,6 +4631,9 @@ Source: "${matchedFrom}"`;
     },
     "online.schoolsfirstfcu.org": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: [-!#$%'()*+,/=?[^_`]];"
+    },
+    "onoff.app": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
     },
     "orange.fr": {
       "password-rules": "minlength: 8; required: upper; required: lower; required: digit; allowed: [-,.;+:!?_];"
@@ -4983,6 +5013,9 @@ Source: "${matchedFrom}"`;
     "wellsfargo.com": {
       "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
     },
+    "wizzair.com": {
+      "password-rules": "minlength: 12; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
+    },
     "wmata.com": {
       "password-rules": 'minlength: 8; required: lower, upper; required: digit; required: digit; required: [-!@#$%^&*~/"()_=+\\|,.?[]];'
     },
@@ -4991,6 +5024,9 @@ Source: "${matchedFrom}"`;
     },
     "wsj.com": {
       "password-rules": "minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;\"'<>,.?]];"
+    },
+    "wunderground.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&.@];"
     },
     "xfinity.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; required: digit;"
