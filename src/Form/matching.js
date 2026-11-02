@@ -943,14 +943,19 @@ const getRelatedText = (el, form, cssSelector) => {
         return '';
     }
 
+    // Text that repeats the input's own value (e.g. an autogrow sizer or a heading mirroring an inline-editable title)
+    // describes the content, not the field, so it shouldn't be used to classify it
+    const ownValue = el instanceof HTMLInputElement ? removeExcessWhitespace(el.value).toLowerCase() : '';
+    const isNotOwnValue = (string) => !ownValue || string.toLowerCase() !== ownValue;
+
     let trimmedText = '';
     const label = scope.querySelector('label');
     if (label) {
         // Try searching for a label first
-        trimmedText = extractElementStrings(label).join(' ');
+        trimmedText = extractElementStrings(label).filter(isNotOwnValue).join(' ');
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = extractElementStrings(scope).join(' ');
+        trimmedText = extractElementStrings(scope).filter(isNotOwnValue).join(' ');
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''

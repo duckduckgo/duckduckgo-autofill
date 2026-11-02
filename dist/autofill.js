@@ -1293,12 +1293,14 @@ Source: "${matchedFrom}"`;
       }
       return "";
     }
+    const ownValue = el instanceof HTMLInputElement ? removeExcessWhitespace(el.value).toLowerCase() : "";
+    const isNotOwnValue = (string) => !ownValue || string.toLowerCase() !== ownValue;
     let trimmedText = "";
     const label = scope.querySelector("label");
     if (label) {
-      trimmedText = extractElementStrings(label).join(" ");
+      trimmedText = extractElementStrings(label).filter(isNotOwnValue).join(" ");
     } else {
-      trimmedText = extractElementStrings(scope).join(" ");
+      trimmedText = extractElementStrings(scope).filter(isNotOwnValue).join(" ");
     }
     if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
     return "";

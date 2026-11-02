@@ -193,6 +193,20 @@ describe('matching', () => {
             subtype: 'credentials.password.current',
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
+        {
+            // inline-editable title whose sizer mirrors the value (e.g. a project called "Newsletter Emails")
+            html: `<div><span aria-hidden="true">Newsletter Emails</span><input type="text" value="Newsletter Emails" /></div><div>Set status</div>`,
+            subtype: 'unknown',
+        },
+        {
+            html: `<div><span aria-hidden="true">Newsletter Email</span><input type="text" value="Newsletter Email" /></div><div>Set status</div>`,
+            subtype: 'unknown',
+        },
+        {
+            // nearby text that differs from the value is still used
+            html: `<div><span>Email</span><input type="text" value="name@example.com" /></div>`,
+            subtype: 'identities.emailAddress',
+        },
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args;
         const { formElement, inputs } = setFormHtml(html);
