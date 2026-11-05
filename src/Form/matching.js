@@ -859,6 +859,19 @@ const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTO
 };
 
 /**
+ * Text that repeats the input's own value (e.g. an inline-editable title whose aria-label or a sizer next to it
+ * mirrors the value) describes the content, not the field, so it shouldn't be used to classify it
+ * @param {HTMLInputElement|HTMLSelectElement} el
+ * @param {string} string
+ * @return {boolean}
+ */
+const isInputOwnValue = (el, string) => {
+    if (!(el instanceof HTMLInputElement)) return false;
+    const ownValue = removeExcessWhitespace(el.value).toLowerCase();
+    return Boolean(ownValue) && string.toLowerCase() === ownValue;
+};
+
+/**
  * Get text from all explicit labels
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @return {string}
@@ -883,7 +896,7 @@ const getExplicitLabelsText = (el) => {
     }
 
     // Labels with long text are likely to be noisy and lead to false positives
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65 && !isInputOwnValue(el, string));
 
     if (filteredLabels.length > 0) {
         return filteredLabels.join(' ');
@@ -943,10 +956,7 @@ const getRelatedText = (el, form, cssSelector) => {
         return '';
     }
 
-    // Text that repeats the input's own value (e.g. an autogrow sizer or a heading mirroring an inline-editable title)
-    // describes the content, not the field, so it shouldn't be used to classify it
-    const ownValue = el instanceof HTMLInputElement ? removeExcessWhitespace(el.value).toLowerCase() : '';
-    const isNotOwnValue = (string) => !ownValue || string.toLowerCase() !== ownValue;
+    const isNotOwnValue = (string) => !isInputOwnValue(el, string);
 
     let trimmedText = '';
     const label = scope.querySelector('label');

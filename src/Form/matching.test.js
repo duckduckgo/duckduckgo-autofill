@@ -207,6 +207,19 @@ describe('matching', () => {
             html: `<div><span>Email</span><input type="text" value="name@example.com" /></div>`,
             subtype: 'identities.emailAddress',
         },
+        {
+            // inline-editable title whose aria-label mirrors the value
+            html: `<div><input type="text" aria-label="Email Project Test" value="Email Project Test" /></div><div role="button">Set status</div>`,
+            subtype: 'unknown',
+        },
+        {
+            html: `<input type="text" aria-label="Email" />`,
+            subtype: 'identities.emailAddress',
+        },
+        {
+            html: `<input aria-label="Email address" value="name@example.com" />`,
+            subtype: 'identities.emailAddress',
+        },
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args;
         const { formElement, inputs } = setFormHtml(html);

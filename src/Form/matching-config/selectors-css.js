@@ -33,8 +33,6 @@ input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeh
 input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
 input[type=email],
-input[type=text][aria-label*=email i]:not([aria-label*=search i]),
-input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
 input[name=username][type=email],
 input[autocomplete=username][type=email],
 input[autocomplete=username][placeholder*=email i],
