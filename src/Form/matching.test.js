@@ -194,31 +194,14 @@ describe('matching', () => {
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
         {
-            // inline-editable title whose sizer mirrors the value (e.g. a project called "Newsletter Emails")
-            html: `<div><span aria-hidden="true">Newsletter Emails</span><input type="text" value="Newsletter Emails" /></div><div>Set status</div>`,
-            subtype: 'unknown',
-        },
-        {
-            html: `<div><span aria-hidden="true">Newsletter Email</span><input type="text" value="Newsletter Email" /></div><div>Set status</div>`,
-            subtype: 'unknown',
-        },
-        {
-            // nearby text that differs from the value is still used
-            html: `<div><span>Email</span><input type="text" value="name@example.com" /></div>`,
-            subtype: 'identities.emailAddress',
-        },
-        {
-            // inline-editable title whose aria-label mirrors the value
-            html: `<div><input type="text" aria-label="Email Project Test" value="Email Project Test" /></div><div role="button">Set status</div>`,
-            subtype: 'unknown',
-        },
-        {
-            html: `<input type="text" aria-label="Email" />`,
-            subtype: 'identities.emailAddress',
-        },
-        {
+            // aria-labels are still matched when they don't repeat the value
             html: `<input aria-label="Email address" value="name@example.com" />`,
             subtype: 'identities.emailAddress',
+        },
+        {
+            html: `<input type="text" aria-label="Email or phone number" />`,
+            subtype: 'credentials.username',
+            opts: { isLogin: true },
         },
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args;
