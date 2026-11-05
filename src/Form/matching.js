@@ -867,8 +867,8 @@ const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTO
 };
 
 /**
- * A label that repeats the input's own value (e.g. an inline-editable title whose aria-label mirrors the value)
- * describes the content, not the field, so it shouldn't be used to classify it
+ * Text that repeats the input's own value (e.g. an inline-editable title whose aria-label and sizer element mirror
+ * the value) describes the content, not the field, so it shouldn't be used to classify it
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {string} string
  * @return {boolean}
@@ -968,10 +968,14 @@ const getRelatedText = (el, form, cssSelector) => {
     const label = scope.querySelector('label');
     if (label) {
         // Try searching for a label first
-        trimmedText = extractElementStrings(label).join(' ');
+        trimmedText = extractElementStrings(label)
+            .filter((string) => !isInputOwnValue(el, string))
+            .join(' ');
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = extractElementStrings(scope).join(' ');
+        trimmedText = extractElementStrings(scope)
+            .filter((string) => !isInputOwnValue(el, string))
+            .join(' ');
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''

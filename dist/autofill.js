@@ -1310,9 +1310,9 @@ Source: "${matchedFrom}"`;
     let trimmedText = "";
     const label = scope.querySelector("label");
     if (label) {
-      trimmedText = extractElementStrings(label).join(" ");
+      trimmedText = extractElementStrings(label).filter((string) => !isInputOwnValue(el, string)).join(" ");
     } else {
-      trimmedText = extractElementStrings(scope).join(" ");
+      trimmedText = extractElementStrings(scope).filter((string) => !isInputOwnValue(el, string)).join(" ");
     }
     if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
     return "";

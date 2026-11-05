@@ -194,6 +194,11 @@ describe('matching', () => {
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
         {
+            // inline-editable title (Asana) whose aria-label and aria-hidden sizer both mirror the value
+            html: `<span><input type="text" aria-label="Email Project Test" value="Email Project Test" /><span aria-hidden="true">Email Project Test</span></span>`,
+            subtype: 'unknown',
+        },
+        {
             // aria-labels are still matched when they don't repeat the value
             html: `<input aria-label="Email address" value="name@example.com" />`,
             subtype: 'identities.emailAddress',
