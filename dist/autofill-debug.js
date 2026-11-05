@@ -986,8 +986,17 @@ Source: "${matchedFrom}"`;
      */
     execCssSelector(lookup, el) {
       const selector = this.cssSelector(lookup);
+      let matched = el.matches(selector);
+      if (matched && isInputOwnValue(el, el.getAttribute("aria-label") || "")) {
+        const withoutAriaLabel = (
+          /** @type {HTMLElement} */
+          el.cloneNode(false)
+        );
+        withoutAriaLabel.removeAttribute("aria-label");
+        matched = withoutAriaLabel.matches(selector);
+      }
       return {
-        matched: el.matches(selector),
+        matched,
         strategyName: "cssSelector",
         matcherType: lookup
       };
@@ -1248,6 +1257,11 @@ Source: "${matchedFrom}"`;
     if (!string || string.length > textLengthCutoff + 50) return "";
     return string.replace(/\n/g, " ").replace(/\s{2,}/g, " ");
   };
+  var isInputOwnValue = (el, string) => {
+    if (!(el instanceof HTMLInputElement)) return false;
+    const ownValue = removeExcessWhitespace(el.value).toLowerCase();
+    return Boolean(ownValue) && string.toLowerCase() === ownValue;
+  };
   var getExplicitLabelsText = (el) => {
     const labelTextCandidates = [];
     for (const label of el.labels || []) {
@@ -1263,7 +1277,7 @@ Source: "${matchedFrom}"`;
         labelTextCandidates.push(...extractElementStrings(labelledByElement));
       }
     }
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65 && !isInputOwnValue(el, string));
     if (filteredLabels.length > 0) {
       return filteredLabels.join(" ");
     }
@@ -1300,9 +1314,9 @@ Source: "${matchedFrom}"`;
     let trimmedText = "";
     const label = scope.querySelector("label");
     if (label) {
-      trimmedText = extractElementStrings(label).join(" ");
+      trimmedText = extractElementStrings(label).filter((string) => !isInputOwnValue(el, string)).join(" ");
     } else {
-      trimmedText = extractElementStrings(scope).join(" ");
+      trimmedText = extractElementStrings(scope).filter((string) => !isInputOwnValue(el, string)).join(" ");
     }
     if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
     return "";

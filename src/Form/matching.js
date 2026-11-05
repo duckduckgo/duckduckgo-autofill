@@ -466,8 +466,16 @@ class Matching {
      */
     execCssSelector(lookup, el) {
         const selector = this.cssSelector(lookup);
+        let matched = el.matches(selector);
+        // An aria-label that repeats the input's own value isn't a label (e.g. inline-editable titles), so it
+        // shouldn't satisfy aria-label selectors. Check a detached copy without it rather than mutating the page.
+        if (matched && isInputOwnValue(el, el.getAttribute('aria-label') || '')) {
+            const withoutAriaLabel = /** @type {HTMLElement} */ (el.cloneNode(false));
+            withoutAriaLabel.removeAttribute('aria-label');
+            matched = withoutAriaLabel.matches(selector);
+        }
         return {
-            matched: el.matches(selector),
+            matched,
             strategyName: 'cssSelector',
             matcherType: lookup,
         };
@@ -859,6 +867,19 @@ const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTO
 };
 
 /**
+ * Text that repeats the input's own value (e.g. an inline-editable title whose aria-label and sizer element mirror
+ * the value) describes the content, not the field, so it shouldn't be used to classify it
+ * @param {HTMLInputElement|HTMLSelectElement} el
+ * @param {string} string
+ * @return {boolean}
+ */
+const isInputOwnValue = (el, string) => {
+    if (!(el instanceof HTMLInputElement)) return false;
+    const ownValue = removeExcessWhitespace(el.value).toLowerCase();
+    return Boolean(ownValue) && string.toLowerCase() === ownValue;
+};
+
+/**
  * Get text from all explicit labels
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @return {string}
@@ -883,7 +904,7 @@ const getExplicitLabelsText = (el) => {
     }
 
     // Labels with long text are likely to be noisy and lead to false positives
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65 && !isInputOwnValue(el, string));
 
     if (filteredLabels.length > 0) {
         return filteredLabels.join(' ');
@@ -947,10 +968,14 @@ const getRelatedText = (el, form, cssSelector) => {
     const label = scope.querySelector('label');
     if (label) {
         // Try searching for a label first
-        trimmedText = extractElementStrings(label).join(' ');
+        trimmedText = extractElementStrings(label)
+            .filter((string) => !isInputOwnValue(el, string))
+            .join(' ');
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = extractElementStrings(scope).join(' ');
+        trimmedText = extractElementStrings(scope)
+            .filter((string) => !isInputOwnValue(el, string))
+            .join(' ');
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
