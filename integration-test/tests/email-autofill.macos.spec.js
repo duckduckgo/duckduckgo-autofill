@@ -8,6 +8,7 @@ import { signupPage } from '../helpers/pages/signupPage.js';
 import { scannerPerf } from '../helpers/pages/scannerPerf.js';
 import { emailAutofillPage } from '../helpers/pages/emailAutofillPage.js';
 import { selectInputPage } from '../helpers/pages/selectInputPage.js';
+import { stateDropdownPage } from '../helpers/pages/stateDropdownPage.js';
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -238,6 +239,49 @@ test.describe('macos', () => {
             await selectInput.selectFirstName(identity.firstName, formWithLabel);
             await page.waitForTimeout(100);
             await selectInput.assertSelectedValue(identity.addressCity, formWithLabel);
+        });
+
+        test('with an identity only - should not decorate state input with combobox role', async ({ page }) => {
+            await forwardConsoleMessages(page);
+            const statePage = stateDropdownPage(page);
+
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page);
+
+            await applyScript(page);
+
+            await statePage.navigate('combobox');
+            await page.waitForTimeout(100);
+            // The combobox state input should be classified but NOT decorated
+            await statePage.assertComboboxStateClassified();
+            await statePage.assertComboboxStateNotDecorated();
+        });
+
+        test('with an identity only - should still autofill combobox state input when filling from another field', async ({ page }) => {
+            await forwardConsoleMessages(page);
+            const statePage = stateDropdownPage(page);
+
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page);
+
+            await applyScript(page);
+
+            await statePage.navigate('combobox');
+            await statePage.selectFirstName(identity.firstName);
+            await page.waitForTimeout(100);
+            await statePage.assertStateValue(identity.addressProvince, 'combobox');
+        });
+
+        test('with an identity only - should decorate plain text state input', async ({ page }) => {
+            await forwardConsoleMessages(page);
+            const statePage = stateDropdownPage(page);
+
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page);
+
+            await applyScript(page);
+
+            await statePage.navigate('plain-text');
+            await page.waitForTimeout(100);
+            // The plain text state input should be both classified AND decorated
+            await statePage.assertPlainTextStateDecorated();
         });
 
         test('with an identity + Email Protection, autofill using duck address in identity', async ({ page }) => {
