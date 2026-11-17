@@ -473,6 +473,26 @@ class Form {
         }
     }
 
+    recategorizeDualPurposeContactInputs() {
+        const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+        const canAutofillEmail = this.device.settings.canAutofillType(
+            { mainType: 'identities', subtype: 'emailAddress', variant: '' },
+            this.device.inContextSignup,
+        );
+        if (hasPhoneData || !canAutofillEmail) return;
+
+        const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
+        for (const input of phoneInputs) {
+            const elementStrings = Object.values(this.matching.getElementStrings(input, this.form)).join(' ');
+            const acceptsPhone = /\b(?:phone|mobile)\b/i.test(elementStrings);
+            const acceptsEmail = /\be-?mail\b/i.test(elementStrings);
+            if (!acceptsPhone || !acceptsEmail) continue;
+
+            input.setAttribute(ATTR_INPUT_TYPE, 'identities.emailAddress');
+            this.decorateInput(input);
+        }
+    }
+
     /**
      * Recategorizes the new/current password field variant
      */
@@ -524,6 +544,8 @@ class Form {
         }
 
         if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+
+        this.recategorizeDualPurposeContactInputs();
 
         if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
 
