@@ -209,4 +209,123 @@ test.describe('About Blank Page', () => {
             .poll(() => calls(lateFrame), { timeout: 1000, message: 'the first tap should ask native for autofill data' })
             .toContain('getAutofillData');
     });
+
+    test('autofill starts for shadow DOM forms behind wrappers or built-in hosts, but not for childless content', async ({ page }) => {
+        await createWebkitMocks('ios').applyTo(page);
+        await createAutofillScript()
+            .replaceAll(iosContentScopeReplacements())
+            .platform('ios')
+            .bundle('./dist/autofill.ios.js')
+            .applyTo(page);
+
+        await page.clock.install();
+
+        await page.route('https://example.com/', (route) =>
+            route.fulfill({
+                contentType: 'text/html',
+                body: `<!doctype html><body>
+                    <iframe id="nested-custom"></iframe>
+                    <iframe id="div-host"></iframe>
+                    <iframe id="nested-div-host"></iframe>
+                    <iframe id="pixel"></iframe>
+                    <iframe id="empty-div-and-script"></iframe>
+                    <iframe id="document-write-pixel"></iframe>
+                    <script>
+                        const form = '<form><input type="email" autocomplete="email"><input type="password" autocomplete="new-password"><button type="submit">Create account</button></form>';
+                        const doc = (id) => document.getElementById(id).contentDocument;
+                        setTimeout(() => {
+                            // a custom element shadow host, nested inside a wrapper set with innerHTML
+                            const nestedCustom = doc('nested-custom');
+                            nestedCustom.defaultView.customElements.define(
+                                'acme-sign-up',
+                                class extends nestedCustom.defaultView.HTMLElement {
+                                    connectedCallback() {
+                                        this.attachShadow({ mode: 'open' }).innerHTML = form;
+                                    }
+                                },
+                            );
+                            nestedCustom.body.innerHTML = '<div class="wrap"><acme-sign-up></acme-sign-up></div>';
+
+                            // a built-in element (no dash in its name) hosting the form's shadow root
+                            const divHost = doc('div-host').createElement('div');
+                            divHost.attachShadow({ mode: 'open' }).innerHTML = form;
+                            doc('div-host').body.append(divHost);
+
+                            // a built-in shadow host, nested inside a wrapper
+                            const wrapper = doc('nested-div-host').createElement('section');
+                            const nestedDivHost = doc('nested-div-host').createElement('div');
+                            wrapper.append(nestedDivHost);
+                            nestedDivHost.attachShadow({ mode: 'open' }).innerHTML = form;
+                            doc('nested-div-host').body.append(wrapper);
+
+                            // childless content, as tracking or ad frames often get
+                            doc('pixel').body.append(doc('pixel').createElement('img'));
+                            doc('empty-div-and-script').body.append(
+                                doc('empty-div-and-script').createElement('div'),
+                                doc('empty-div-and-script').createElement('script'),
+                            );
+                            const writeDoc = doc('document-write-pixel');
+                            writeDoc.open();
+                            writeDoc.write('<!doctype html><html><head><script></' + 'script></head><body><img></body></html>');
+                            writeDoc.close();
+                        }, 1000);
+                    </script>
+                </body>`,
+            }),
+        );
+        await page.goto('https://example.com/');
+
+        /** @param {import('@playwright/test').Frame} frame */
+        const calls = (frame) => frame.evaluate(() => window.__playwright_autofill.mocks.calls.map(([name]) => name));
+
+        /** @param {string} id */
+        const frameById = async (id) => {
+            const frame = await page
+                .locator(`#${id}`)
+                .elementHandle()
+                .then((el) => el?.contentFrame());
+            if (!frame) throw new Error(`no frame for #${id}`);
+            return frame;
+        };
+
+        const starting = {
+            'nested-custom': 'a custom element shadow host nested in a wrapper is added',
+            'div-host': 'a built-in element hosting a shadow root is added',
+            'nested-div-host': 'a built-in shadow host nested in a wrapper is added',
+        };
+        const dormant = {
+            pixel: 'only a tracking pixel is added',
+            'empty-div-and-script': 'only an empty div and a script are added',
+            'document-write-pixel': 'document.write only writes a script and a pixel',
+        };
+
+        await expect
+            .poll(() => calls(page.mainFrame()), { message: 'autofill should start in the main frame' })
+            .toContain('getRuntimeConfiguration');
+        for (const id of [...Object.keys(starting), ...Object.keys(dormant)]) {
+            expect(await calls(await frameById(id)), `autofill should not start in #${id} before it gets content`).toEqual([]);
+        }
+
+        await page.clock.runFor(1000);
+
+        for (const [id, reason] of Object.entries(starting)) {
+            const frame = await frameById(id);
+            await expect
+                .poll(() => calls(frame), { timeout: 1000, message: `autofill should start, without a tap, when ${reason}` })
+                .toContain('getRuntimeConfiguration');
+        }
+
+        // the frames that started show the observer has run; give the dormant ones the same chance before checking
+        await page.clock.runFor(1000);
+        for (const [id, reason] of Object.entries(dormant)) {
+            expect(await calls(await frameById(id)), `autofill should not start when ${reason}`).toEqual([]);
+        }
+
+        // the form behind the built-in host is usable on the first tap
+        const divHostFrame = await frameById('div-host');
+        await divHostFrame.locator('input[type="password"]').click();
+        await expect
+            .poll(() => calls(divHostFrame), { timeout: 1000, message: 'the first tap should ask native for autofill data' })
+            .toContain('getAutofillData');
+    });
 });
