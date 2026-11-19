@@ -89,6 +89,8 @@ interface ScriptBuilder {
     platform(platform: Platform): Omit<ScriptBuilder, 'platform'>;
     // can alter constants as defined in src/constants.js if needed
     withConstants(constants: any): Omit<ScriptBuilder, 'withConstants'>;
+    // load a different built script than the default ./dist/autofill.js, e.g. './dist/autofill.ios.js'
+    bundle(path: string): Omit<ScriptBuilder, 'bundle'>;
     // apply to the page, this is the final step
     applyTo(page: import('@playwright/test').Page): Promise<void>;
 }
