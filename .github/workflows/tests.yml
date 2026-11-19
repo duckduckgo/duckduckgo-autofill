@@ -24,6 +24,19 @@ jobs:
                       ${{ runner.os }}-node-
             - name: npm ci
               run: 'npm ci'
+            - name: 'TEMP: verify npm cooldown'
+              run: |
+                  node -v && npm -v
+                  VERSION=$(npm view electron-to-chromium time --json | node -e 'const t=JSON.parse(require("fs").readFileSync(0));const v=Object.entries(t).filter(([k,d])=>/^\d/.test(k)&&(Date.now()-new Date(d))/864e5<6.5&&(Date.now()-new Date(d))/864e5>1).pop();console.log(v[0], ((Date.now()-new Date(v[1]))/864e5).toFixed(2), "days old")')
+                  echo "Testing electron-to-chromium@$VERSION"
+                  for dir in . packages/password; do
+                      echo "== $dir"
+                      if (cd "$dir" && npm pack --dry-run "electron-to-chromium@${VERSION%% *}" 2>&1 | tee /dev/stderr | grep -q ETARGET); then
+                          echo "PASS: cooldown in force in $dir"
+                      else
+                          echo "FAIL: cooldown not in force in $dir"; exit 1
+                      fi
+                  done
             - name: 'Clean tree'
               run: 'npm run test:clean-tree'
             - name: 'ESLint'
