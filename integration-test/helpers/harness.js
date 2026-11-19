@@ -46,6 +46,7 @@ export async function withEmailProtectionExtensionSignedInAs(page, username) {
  * @param {import("@playwright/test").Page} p.page
  * @param {Record<string, string | boolean>} p.replacements
  * @param {Platform} [p.platform]
+ * @param {string} [p.bundlePath] - the built script to load, defaults to ./dist/autofill.js
  * @param {{
  *     MAX_INPUTS_PER_PAGE: number,
  *     MAX_FORMS_PER_PAGE: number,
@@ -54,8 +55,8 @@ export async function withEmailProtectionExtensionSignedInAs(page, username) {
  * }} [p.constants]
  * @return {Promise<void>}
  */
-function withStringReplacements({ page, replacements, platform = 'macos', constants }) {
-    const content = readFileSync('./dist/autofill.js', 'utf8');
+function withStringReplacements({ page, replacements, platform = 'macos', bundlePath = './dist/autofill.js', constants }) {
+    const content = readFileSync(bundlePath, 'utf8');
     let output = content;
     for (const [keyName, value] of Object.entries(replacements)) {
         const replacement = typeof value === 'boolean' || typeof value === 'string' ? value : JSON.stringify(value);
@@ -118,6 +119,9 @@ export function createAutofillScript() {
     /** @type {Platform} */
     let platform = 'macos';
 
+    /** @type {string | undefined} */
+    let bundlePath;
+
     let constants = {
         MAX_INPUTS_PER_PAGE: 100,
         MAX_FORMS_PER_PAGE: 30,
@@ -147,11 +151,15 @@ export function createAutofillScript() {
             constants = consts;
             return this;
         },
+        bundle(path) {
+            bundlePath = path;
+            return this;
+        },
         async applyTo(page) {
             if (platform === 'windows') {
                 replacements.isWindows = true;
             }
-            return withStringReplacements({ page, replacements, platform, constants });
+            return withStringReplacements({ page, replacements, platform, bundlePath, constants });
         },
     };
 
