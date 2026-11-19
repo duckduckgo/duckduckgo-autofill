@@ -25,7 +25,7 @@ let package = Package(
             resources: [
                 .copy("autofill.js"),
                 .copy("autofill-debug.js"),
-                .copy("autofill.css"),
+                .copy("autofill.ios.js"),
                 .copy("autofill-design-tokens.css"),
                 .copy("shared-credentials.json"),
                 .copy("TopAutofill.html"),

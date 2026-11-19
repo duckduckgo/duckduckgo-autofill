@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up form written into an about:blank iframe</title>
+    <link rel="stylesheet" href="./style.css" />
+    <style>
+        .status { color: #666; }
+        .sign-up-frame { display: block; border: 0.5px solid #999; border-radius: 4px; height: 480px; max-width: 100%; }
+    </style>
+</head>
+
+<body>
+<p><a href="../index.html">[Home]</a></p>
+
+<!-- Manual test page: writes a sign up form into an about:blank iframe in different ways. Load in the native app. -->
+
+<h1>Acme</h1>
+<p>New here? Create an account to track your orders.</p>
+
+<p>
+    <button type="button" id="open-sign-up-inner-html">Sign up (innerHTML)</button>
+    <button type="button" id="open-sign-up-document-write">Sign up (document.write)</button>
+    <button type="button" id="open-sign-up-shadow-dom">Sign up (shadow DOM)</button>
+    <button type="button" id="open-sign-up-shadow-dom-url">Sign up (shadow DOM, same-origin URL)</button>
+</p>
+<p class="status" id="status"></p>
+
+<script>
+    const STYLES = `
+        <style>
+            body { font-family: -apple-system, sans-serif; margin: 0; padding: 1.5em; }
+            label, input, button { display: block; width: 100%; box-sizing: border-box; }
+            input { margin: 0.25em 0 1em; padding: 0.5em; font-size: 1em; }
+            button { padding: 0.6em; font-size: 1em; }
+        </style>
+    `;
+    const SIGN_UP_FORM = `
+        <form id="sign-up" action="/signup" method="post">
+            <h2>Create your Acme account</h2>
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" autocomplete="name">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="new-password">
+            <label for="password-confirm">Confirm password</label>
+            <input id="password-confirm" name="password-confirm" type="password" autocomplete="new-password">
+            <button type="submit">Create account</button>
+        </form>
+        <p id="result"></p>
+    `;
+
+    const status = document.getElementById('status');
+
+    /**
+     * @param {HTMLButtonElement} button
+     * @param {'innerHTML' | 'document.write' | 'shadow DOM' | 'shadow DOM (same-origin URL)'} mode
+     */
+    function openSignUp(button, mode) {
+        button.disabled = true;
+
+        const iframe = document.createElement('iframe');
+        iframe.className = 'sign-up-frame';
+        iframe.id = {
+            innerHTML: 'sign-up-frame-inner-html',
+            'document.write': 'sign-up-frame-document-write',
+            'shadow DOM': 'sign-up-frame-shadow-dom',
+            'shadow DOM (same-origin URL)': 'sign-up-frame-shadow-dom-url',
+        }[mode];
+        iframe.title = `Sign up (${mode})`;
+        status.textContent = `Loading sign up form (${mode})…`;
+
+        if (mode === 'shadow DOM (same-origin URL)') {
+            // same-origin URL (this page), emptied once loaded
+            iframe.src = `${location.pathname}?empty-frame`;
+            iframe.addEventListener(
+                'load',
+                () => {
+                    iframe.contentDocument.body.replaceChildren();
+                    setTimeout(() => writeForm(iframe, mode), 1000);
+                },
+                { once: true },
+            );
+            document.body.append(iframe);
+        } else {
+            // no src, so the frame stays at about:blank
+            document.body.append(iframe);
+            setTimeout(() => writeForm(iframe, mode), 1000);
+        }
+    }
+
+    /**
+     * @param {HTMLIFrameElement} iframe
+     * @param {'innerHTML' | 'document.write' | 'shadow DOM' | 'shadow DOM (same-origin URL)'} mode
+     */
+    function writeForm(iframe, mode) {
+        const doc = iframe.contentDocument;
+        let formRoot = doc;
+        if (mode === 'innerHTML') {
+            doc.body.innerHTML = STYLES + SIGN_UP_FORM;
+        } else if (mode === 'document.write') {
+            doc.open();
+            doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8">${STYLES}</head><body>${SIGN_UP_FORM}</body></html>`);
+            doc.close();
+        } else {
+            const host = doc.createElement('acme-sign-up');
+            formRoot = host.attachShadow({ mode: 'open' });
+            formRoot.innerHTML = STYLES + SIGN_UP_FORM;
+            doc.body.append(host);
+        }
+
+        formRoot.getElementById('sign-up').addEventListener('submit', (event) => {
+            event.preventDefault();
+            formRoot.getElementById('result').textContent = `Account created for ${formRoot.getElementById('email').value}`;
+        });
+        status.textContent = `Sign up form written with ${mode} into the iframe (${iframe.contentWindow.location.href}).`;
+    }
+
+    const innerHtmlButton = document.getElementById('open-sign-up-inner-html');
+    const documentWriteButton = document.getElementById('open-sign-up-document-write');
+    innerHtmlButton.addEventListener('click', () => openSignUp(innerHtmlButton, 'innerHTML'));
+    documentWriteButton.addEventListener('click', () => openSignUp(documentWriteButton, 'document.write'));
+    const shadowDomButton = document.getElementById('open-sign-up-shadow-dom');
+    shadowDomButton.addEventListener('click', () => openSignUp(shadowDomButton, 'shadow DOM'));
+    const shadowDomUrlButton = document.getElementById('open-sign-up-shadow-dom-url');
+    shadowDomUrlButton.addEventListener('click', () => openSignUp(shadowDomUrlButton, 'shadow DOM (same-origin URL)'));
+</script>
+
+</body>
+
+</html>
