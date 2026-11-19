@@ -133,7 +133,6 @@ test.describe('About Blank Page', () => {
             })
             .toContain('getRuntimeConfiguration');
 
-        // production autofill doesn't respond here, as it was already running before document.write
         await documentWriteFrame.locator('input[type="password"]').click();
         await expect
             .poll(() => calls(documentWriteFrame), {
@@ -234,7 +233,6 @@ test.describe('About Blank Page', () => {
                         const form = '<form><input type="email" autocomplete="email"><input type="password" autocomplete="new-password"><button type="submit">Create account</button></form>';
                         const doc = (id) => document.getElementById(id).contentDocument;
                         setTimeout(() => {
-                            // a custom element shadow host, nested inside a wrapper set with innerHTML
                             const nestedCustom = doc('nested-custom');
                             nestedCustom.defaultView.customElements.define(
                                 'acme-sign-up',
@@ -246,19 +244,16 @@ test.describe('About Blank Page', () => {
                             );
                             nestedCustom.body.innerHTML = '<div class="wrap"><acme-sign-up></acme-sign-up></div>';
 
-                            // a built-in element (no dash in its name) hosting the form's shadow root
                             const divHost = doc('div-host').createElement('div');
                             divHost.attachShadow({ mode: 'open' }).innerHTML = form;
                             doc('div-host').body.append(divHost);
 
-                            // a built-in shadow host, nested inside a wrapper
                             const wrapper = doc('nested-div-host').createElement('section');
                             const nestedDivHost = doc('nested-div-host').createElement('div');
                             wrapper.append(nestedDivHost);
                             nestedDivHost.attachShadow({ mode: 'open' }).innerHTML = form;
                             doc('nested-div-host').body.append(wrapper);
 
-                            // childless content, as tracking or ad frames often get
                             doc('pixel').body.append(doc('pixel').createElement('img'));
                             doc('empty-div-and-script').body.append(
                                 doc('empty-div-and-script').createElement('div'),
@@ -315,13 +310,12 @@ test.describe('About Blank Page', () => {
                 .toContain('getRuntimeConfiguration');
         }
 
-        // the frames that started show the observer has run; give the dormant ones the same chance before checking
+        // let any pending mutations settle before asserting the dormant frames
         await page.clock.runFor(1000);
         for (const [id, reason] of Object.entries(dormant)) {
             expect(await calls(await frameById(id)), `autofill should not start when ${reason}`).toEqual([]);
         }
 
-        // the form behind the built-in host is usable on the first tap
         const divHostFrame = await frameById('div-host');
         await divHostFrame.locator('input[type="password"]').click();
         await expect

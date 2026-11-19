@@ -36,7 +36,7 @@ export async function bundleTarget(target, _targetConfig) {
     if (wrapper.indexOf(MATCHER) === -1) {
         throw new Error('Bundle target not found.');
     }
-    // a function, so `$&`-style patterns in the bundle are inserted as they are, not treated as replacement patterns
+    // replacer function, so `$&` sequences in the bundle are not treated as patterns
     const embedded = wrapper.replace(MATCHER, () => file.replaced);
     const named = basename(file.path, '.js');
     const dir = dirname(file.path);

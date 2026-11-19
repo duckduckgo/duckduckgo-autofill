@@ -15,24 +15,7 @@
 <body>
 <p><a href="../index.html">[Home]</a></p>
 
-<!--
-    Manual test page for autofill in about:blank iframes.
-
-    The page starts with no form at all. Each button creates an iframe with no src (so it's about:blank and shares this
-    page's origin), waits a second, then writes a sign up form into it. Sign up rather than sign in, so autofill can be
-    seen working (email protection, password generation) without saved credentials for whatever URL serves this page. This mirrors embeds that render their form into
-    a blank iframe after load (e.g. some marketing form embeds), in the two ways they commonly do it:
-
-    - innerHTML: the form is set as the body's content, the document itself is kept.
-    - document.write: document.open() clears the document and the form is written as a whole new page, as older
-      embeds do. This is the harder case, since everything in the frame's document is replaced.
-    - shadow DOM: the frame only gets a custom element (<acme-sign-up>); the whole form lives inside its open shadow
-      root, as web component based embeds do. Nothing autofill looks for appears in the frame's own document.
-    - shadow DOM (same-origin URL): for comparison, the same shadow DOM form, but in an iframe with a real same-origin
-      URL (this page, emptied) instead of about:blank. Autofill runs there as on any normal page.
-
-    Autofill comes from the native app, so this page deliberately loads no autofill script.
--->
+<!-- Manual test page: writes a sign up form into an about:blank iframe in different ways. Load in the native app. -->
 
 <h1>Acme</h1>
 <p>New here? Create an account to track your orders.</p>
@@ -91,7 +74,7 @@
         status.textContent = `Loading sign up form (${mode})…`;
 
         if (mode === 'shadow DOM (same-origin URL)') {
-            // a real same-origin URL (this page), emptied once loaded, so it's comparable with the about:blank frames
+            // same-origin URL (this page), emptied once loaded
             iframe.src = `${location.pathname}?empty-frame`;
             iframe.addEventListener(
                 'load',
@@ -103,7 +86,7 @@
             );
             document.body.append(iframe);
         } else {
-            // no src: the frame stays at about:blank and shares this page's origin, so we can write into it
+            // no src, so the frame stays at about:blank
             document.body.append(iframe);
             setTimeout(() => writeForm(iframe, mode), 1000);
         }
@@ -115,7 +98,6 @@
      */
     function writeForm(iframe, mode) {
         const doc = iframe.contentDocument;
-        // where the form ends up: the frame's document, or the custom element's shadow root
         let formRoot = doc;
         if (mode === 'innerHTML') {
             doc.body.innerHTML = STYLES + SIGN_UP_FORM;
@@ -124,15 +106,12 @@
             doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8">${STYLES}</head><body>${SIGN_UP_FORM}</body></html>`);
             doc.close();
         } else {
-            // the frame's own document only gets the host element; styles go inside the shadow root too, as
-            // the page's styles don't reach into it
             const host = doc.createElement('acme-sign-up');
             formRoot = host.attachShadow({ mode: 'open' });
             formRoot.innerHTML = STYLES + SIGN_UP_FORM;
             doc.body.append(host);
         }
 
-        // fires the submit event (as autofill's save prompt expects) without navigating the frame away
         formRoot.getElementById('sign-up').addEventListener('submit', (event) => {
             event.preventDefault();
             formRoot.getElementById('result').textContent = `Account created for ${formRoot.getElementById('email').value}`;
