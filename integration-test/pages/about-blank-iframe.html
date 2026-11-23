@@ -37,6 +37,8 @@
     <button type="button" data-mode="shadow DOM (same-origin URL)">shadow DOM (same-origin URL)</button>
     <button type="button" data-mode="custom element defined later">custom element defined later</button>
     <button type="button" data-mode="lone input">lone input</button>
+    <button type="button" data-mode="replaced body (shadow DOM)">replaced body (shadow DOM)</button>
+    <button type="button" data-mode="replaced html (shadow DOM)">replaced html (shadow DOM)</button>
     <h2>Empty frames</h2>
     <button type="button" data-frames="0">0</button>
     <button type="button" data-frames="10">10</button>
@@ -160,6 +162,28 @@
                 });
                 break;
             }
+            case 'replaced body (shadow DOM)': {
+                frameArea.append(iframe);
+                later(() => {
+                    const doc = iframe.contentDocument;
+                    const body = doc.createElement('body');
+                    body.append(shadowHost(doc));
+                    doc.body.replaceWith(body);
+                });
+                break;
+            }
+            case 'replaced html (shadow DOM)': {
+                frameArea.append(iframe);
+                later(() => {
+                    const doc = iframe.contentDocument;
+                    const root = doc.createElement('html');
+                    const body = doc.createElement('body');
+                    body.append(shadowHost(doc));
+                    root.append(doc.createElement('head'), body);
+                    doc.replaceChild(root, doc.documentElement);
+                });
+                break;
+            }
         }
 
         for (const button of document.querySelectorAll('[data-mode]')) {
@@ -180,6 +204,13 @@
         const host = doc.createElement('acme-sign-up');
         host.attachShadow({ mode: 'open' }).innerHTML = SIGN_UP_FORM;
         doc.body.append(host);
+    }
+
+    /** @param {Document} doc */
+    function shadowHost(doc) {
+        const host = doc.createElement('div');
+        host.attachShadow({ mode: 'open' }).innerHTML = SIGN_UP_FORM;
+        return host;
     }
 
     for (const button of document.querySelectorAll('[data-mode]')) {

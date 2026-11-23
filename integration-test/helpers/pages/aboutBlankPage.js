@@ -168,6 +168,40 @@ export function aboutBlankPage(page) {
         }
 
         /** @param {string} name */
+        replaceBodyWithOneHostingShadowForm(name) {
+            return page.evaluate(
+                ({ name, html }) => {
+                    const iframe = /** @type {HTMLIFrameElement} */ (document.querySelector(`iframe[name="${name}"]`));
+                    const doc = /** @type {Document} */ (iframe.contentDocument);
+                    const body = doc.createElement('body');
+                    const host = doc.createElement('div');
+                    host.attachShadow({ mode: 'open' }).innerHTML = html;
+                    body.append(host);
+                    doc.body.replaceWith(body);
+                },
+                { name, html: SIGN_UP_FORM },
+            );
+        }
+
+        /** @param {string} name */
+        replaceDocumentElementWithOneHostingShadowForm(name) {
+            return page.evaluate(
+                ({ name, html }) => {
+                    const iframe = /** @type {HTMLIFrameElement} */ (document.querySelector(`iframe[name="${name}"]`));
+                    const doc = /** @type {Document} */ (iframe.contentDocument);
+                    const root = doc.createElement('html');
+                    const body = doc.createElement('body');
+                    const host = doc.createElement('div');
+                    host.attachShadow({ mode: 'open' }).innerHTML = html;
+                    body.append(host);
+                    root.append(doc.createElement('head'), body);
+                    doc.replaceChild(root, doc.documentElement);
+                },
+                { name, html: SIGN_UP_FORM },
+            );
+        }
+
+        /** @param {string} name */
         async tapPasswordField(name) {
             const frame = await frameNamed(name);
             await frame.locator('input[type="password"]').click();

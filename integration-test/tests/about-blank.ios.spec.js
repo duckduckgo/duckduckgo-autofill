@@ -63,4 +63,17 @@ test.describe('Autofill in about:blank frames (iOS)', () => {
         await frames.assertAutofillStarted('div-host');
         await frames.assertAutofillStarted('wrapped-div-host');
     });
+
+    test('starts when the whole body or document element is replaced by one holding a shadow form', async ({ page }) => {
+        const frames = aboutBlankPage(page);
+        await frames.openWithAutofillInEveryFrame();
+        await frames.addFrameWithoutSrc('replaced-body');
+        await frames.addFrameWithoutSrc('replaced-document-element');
+
+        await frames.replaceBodyWithOneHostingShadowForm('replaced-body');
+        await frames.replaceDocumentElementWithOneHostingShadowForm('replaced-document-element');
+
+        await frames.assertAutofillStarted('replaced-body');
+        await frames.assertAutofillStarted('replaced-document-element');
+    });
 });

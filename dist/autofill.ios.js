@@ -16137,10 +16137,11 @@ function createDevice() {
         const AUTOFILL_ELEMENTS = 'form, input, select, textarea, button, [contenteditable]';
         const SKELETON = new Set(['html', 'head', 'body']);
         // Covers shadow DOM forms that querySelector can't see, without walking added subtrees.
-        const mightNeedAutofill = (node) =>
-            node.nodeType === Node.ELEMENT_NODE &&
-            !SKELETON.has(node.localName) &&
-            (node.localName.includes('-') || node.shadowRoot !== null || node.firstElementChild !== null);
+        const mightNeedAutofill = (node) => {
+            if (node.nodeType !== Node.ELEMENT_NODE) return false;
+            if (SKELETON.has(node.localName)) return [...node.children].some(mightNeedAutofill);
+            return node.localName.includes('-') || node.shadowRoot !== null || node.firstElementChild !== null;
+        };
         const startWhenNeeded = (mutations = []) => {
             let found = false;
             for (const mutation of mutations) {
