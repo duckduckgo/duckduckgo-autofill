@@ -138,26 +138,27 @@ export function aboutBlankPage(page) {
         }
 
         /** @param {string} name */
-        appendDivHostingShadowForm(name) {
+        appendDivThenAttachShadowForm(name) {
             return page.evaluate(
-                ({ name, html }) => {
+                async ({ name, html }) => {
                     const iframe = /** @type {HTMLIFrameElement} */ (document.querySelector(`iframe[name="${name}"]`));
                     const doc = /** @type {Document} */ (iframe.contentDocument);
                     const host = doc.createElement('div');
-                    host.attachShadow({ mode: 'open' }).innerHTML = html;
                     doc.body.append(host);
+                    await new Promise((resolve) => setTimeout(resolve, 0));
+                    host.attachShadow({ mode: 'open' }).innerHTML = html;
                 },
                 { name, html: SIGN_UP_FORM },
             );
         }
 
         /** @param {string} name */
-        appendDivHostingShadowFormInsideWrapper(name) {
+        appendDivHostingShadowFormInsideDialog(name) {
             return page.evaluate(
                 ({ name, html }) => {
                     const iframe = /** @type {HTMLIFrameElement} */ (document.querySelector(`iframe[name="${name}"]`));
                     const doc = /** @type {Document} */ (iframe.contentDocument);
-                    const wrapper = doc.createElement('section');
+                    const wrapper = doc.createElement('dialog');
                     const host = doc.createElement('div');
                     wrapper.append(host);
                     host.attachShadow({ mode: 'open' }).innerHTML = html;

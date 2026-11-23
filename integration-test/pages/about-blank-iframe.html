@@ -34,6 +34,7 @@
     <button type="button" data-mode="javascript: URL">javascript: URL</button>
     <button type="button" data-mode="sandboxed">sandboxed</button>
     <button type="button" data-mode="shadow DOM">shadow DOM</button>
+    <button type="button" data-mode="shadow root attached later">shadow root attached later</button>
     <button type="button" data-mode="shadow DOM (same-origin URL)">shadow DOM (same-origin URL)</button>
     <button type="button" data-mode="custom element defined later">custom element defined later</button>
     <button type="button" data-mode="lone input">lone input</button>
@@ -118,6 +119,15 @@
             case 'shadow DOM': {
                 frameArea.append(iframe);
                 later(() => appendShadowForm(iframe.contentDocument));
+                break;
+            }
+            case 'shadow root attached later': {
+                frameArea.append(iframe);
+                later(() => {
+                    const host = iframe.contentDocument.createElement('div');
+                    iframe.contentDocument.body.append(host);
+                    later(() => (host.attachShadow({ mode: 'open' }).innerHTML = SIGN_UP_FORM));
+                });
                 break;
             }
             case 'shadow DOM (same-origin URL)': {

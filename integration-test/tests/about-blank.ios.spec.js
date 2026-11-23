@@ -52,16 +52,16 @@ test.describe('Autofill in about:blank frames (iOS)', () => {
         const frames = aboutBlankPage(page);
         await frames.openWithAutofillInEveryFrame();
         await frames.addFrameWithoutSrc('custom-element');
-        await frames.addFrameWithoutSrc('div-host');
-        await frames.addFrameWithoutSrc('wrapped-div-host');
+        await frames.addFrameWithoutSrc('div-host-in-dialog');
+        await frames.addFrameWithoutSrc('div-host-attached-later');
 
         await frames.appendCustomElementThenDefineIt('custom-element');
-        await frames.appendDivHostingShadowForm('div-host');
-        await frames.appendDivHostingShadowFormInsideWrapper('wrapped-div-host');
+        await frames.appendDivHostingShadowFormInsideDialog('div-host-in-dialog');
+        await frames.appendDivThenAttachShadowForm('div-host-attached-later');
 
         await frames.assertAutofillStarted('custom-element');
-        await frames.assertAutofillStarted('div-host');
-        await frames.assertAutofillStarted('wrapped-div-host');
+        await frames.assertAutofillStarted('div-host-in-dialog');
+        await frames.assertAutofillStarted('div-host-attached-later');
     });
 
     test('starts when the whole body or document element is replaced by one holding a shadow form', async ({ page }) => {
