@@ -19768,6 +19768,31 @@ ${this.options.css}
   };
   _state = new WeakMap();
 
+  // src/DeviceInterface/appleUIController.js
+  function createAppleUIController(device) {
+    if (device.globalConfig.userPreferences?.platform?.name === "ios") {
+      return new NativeUIController();
+    }
+    if (!device.globalConfig.supportsTopFrame) {
+      const options = {
+        ...defaultOptions,
+        platform: "macos",
+        testMode: device.isTestMode()
+      };
+      return new HTMLTooltipUIController(
+        {
+          device,
+          tooltipKind: "modern"
+        },
+        options
+      );
+    }
+    return new OverlayUIController({
+      remove: async () => device._closeAutofillParent(),
+      show: async (details) => device._show(details)
+    });
+  }
+
   // src/deviceApiCalls/additionalDeviceApiCalls.js
   var GetAlias = class extends DeviceApiCall {
     constructor() {
@@ -19872,27 +19897,7 @@ ${this.options.css}
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController() {
-      if (this.globalConfig.userPreferences?.platform?.name === "ios") {
-        return new NativeUIController();
-      }
-      if (!this.globalConfig.supportsTopFrame) {
-        const options = {
-          ...defaultOptions,
-          platform: "macos",
-          testMode: this.isTestMode()
-        };
-        return new HTMLTooltipUIController(
-          {
-            device: this,
-            tooltipKind: "modern"
-          },
-          options
-        );
-      }
-      return new OverlayUIController({
-        remove: async () => this._closeAutofillParent(),
-        show: async (details) => this._show(details)
-      });
+      return createAppleUIController(this);
     }
     /**
      * For now, this could be running

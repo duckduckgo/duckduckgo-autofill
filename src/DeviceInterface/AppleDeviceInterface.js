@@ -1,11 +1,8 @@
 import InterfacePrototype from './InterfacePrototype.js';
 import { formatDuckAddress } from '../autofill-utils.js';
-import { defaultOptions } from '../UI/HTMLTooltip.js';
-import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js';
-import { OverlayUIController } from '../UI/controllers/OverlayUIController.js';
+import { createAppleUIController } from './appleUIController.js';
 import { createNotification, createRequest } from '../../packages/device-api/index.js';
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js';
-import { NativeUIController } from '../UI/controllers/NativeUIController.js';
 import { CloseEmailProtectionTabCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { getInputType } from '../Form/matching.js';
 import { InContextSignup } from '../InContextSignup.js';
@@ -13,7 +10,6 @@ import { ThirdPartyProvider } from '../ThirdPartyProvider.js';
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
- * @typedef {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} HTMLTooltipOptions
  */
 
 class AppleDeviceInterface extends InterfacePrototype {
@@ -36,33 +32,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
     createUIController() {
-        if (this.globalConfig.userPreferences?.platform?.name === 'ios') {
-            return new NativeUIController();
-        }
-
-        if (!this.globalConfig.supportsTopFrame) {
-            /** @type {HTMLTooltipOptions} */
-            const options = {
-                ...defaultOptions,
-                platform: 'macos',
-                testMode: this.isTestMode(),
-            };
-            return new HTMLTooltipUIController(
-                {
-                    device: this,
-                    tooltipKind: 'modern',
-                },
-                options,
-            );
-        }
-
-        /**
-         * If we get here, we're just a controller for an overlay
-         */
-        return new OverlayUIController({
-            remove: async () => this._closeAutofillParent(),
-            show: async (details) => this._show(details),
-        });
+        return createAppleUIController(this);
     }
 
     /**
