@@ -13,10 +13,13 @@
         nav a { padding: 0.25em 0; }
         nav button { width: 100%; padding: 0.75em 0.5em; text-align: left; border: 1px solid #999; border-radius: 6px; background: #f4f4f4; }
         nav button[aria-pressed="true"] { background: #333; color: #fff; }
+        nav h2 { margin: 1em 0 0; font-weight: bold; }
         main { display: flex; flex-direction: column; min-width: 0; padding: 0.5em; gap: 0.5em; }
         #status { margin: 0; }
         #frame-area { flex: 1; min-height: 0; }
         #frame-area iframe { width: 100%; height: 100%; border: 1px solid #999; border-radius: 6px; }
+        #frame-area.flood { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 4px; overflow-y: auto; }
+        #frame-area.flood iframe { width: 24px; height: 24px; border-radius: 2px; }
     </style>
 </head>
 
@@ -34,6 +37,12 @@
     <button type="button" data-mode="shadow DOM (same-origin URL)">shadow DOM (same-origin URL)</button>
     <button type="button" data-mode="custom element defined later">custom element defined later</button>
     <button type="button" data-mode="lone input">lone input</button>
+    <h2>Empty frames</h2>
+    <button type="button" data-frames="0">0</button>
+    <button type="button" data-frames="10">10</button>
+    <button type="button" data-frames="25">25</button>
+    <button type="button" data-frames="50">50</button>
+    <button type="button" data-frames="100">100</button>
 </nav>
 
 <main>
@@ -69,6 +78,10 @@
         timers.forEach(clearTimeout);
         timers = [];
         frameArea.replaceChildren();
+        frameArea.classList.remove('flood');
+        for (const button of document.querySelectorAll('[data-frames]')) {
+            button.removeAttribute('aria-pressed');
+        }
 
         const iframe = document.createElement('iframe');
         iframe.title = mode;
@@ -171,6 +184,24 @@
 
     for (const button of document.querySelectorAll('[data-mode]')) {
         button.addEventListener('click', () => showFrame(button.dataset.mode));
+    }
+
+    for (const button of document.querySelectorAll('[data-frames]')) {
+        button.addEventListener('click', () => {
+            location.search = `?frames=${button.dataset.frames}`;
+        });
+    }
+
+    const frameCount = new URLSearchParams(location.search).get('frames');
+    if (frameCount !== null) {
+        frameArea.classList.add('flood');
+        for (let i = 0; i < Number(frameCount); i++) {
+            frameArea.append(document.createElement('iframe'));
+        }
+        for (const button of document.querySelectorAll('[data-frames]')) {
+            button.setAttribute('aria-pressed', String(button.dataset.frames === frameCount));
+        }
+        status.textContent = `${frameCount} empty about:blank frames`;
     }
 </script>
 
