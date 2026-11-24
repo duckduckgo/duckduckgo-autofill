@@ -16182,4 +16182,5 @@ if (window.location.protocol === 'about:' && window.location.pathname === 'blank
 } else {
     ddgAutofill();
 }
+
 }
