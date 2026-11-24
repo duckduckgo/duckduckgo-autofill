@@ -1,3 +1,4 @@
+'use strict';
 {
     const ddgAutofill = () => {
 var __defProp = Object.defineProperty;

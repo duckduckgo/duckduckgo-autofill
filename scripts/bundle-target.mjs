@@ -13,6 +13,7 @@ const ROOT = join(CWD, '..');
  * Output is like this:
  *
  * ```js
+ * 'use strict';
  * {
  *     const ddgAutofill = () => {
  *         // bundle code here
@@ -27,6 +28,9 @@ const ROOT = join(CWD, '..');
  */
 export async function bundleTarget(target, targetConfig, { dev = false } = {}) {
     const tokens = {
+        // esm output has no "use strict" (modules are strict by default), but the
+        // wrapped bundle runs as a classic script, so restore it to match the iife builds
+        strict: "'use strict';",
         blockStart: '{',
         closureStart: '    const ddgAutofill = () => {',
         closureEnd: '    };',
@@ -45,7 +49,7 @@ export async function bundleTarget(target, targetConfig, { dev = false } = {}) {
         metafile: true,
         write: false,
         sourcemap: dev ? 'inline' : false,
-        banner: { js: [tokens.blockStart, tokens.closureStart].join('\n') },
+        banner: { js: [tokens.strict, tokens.blockStart, tokens.closureStart].join('\n') },
         footer: { js: [tokens.closureEnd, tokens.activation, tokens.blockEnd].join('\n') },
         plugins: [zodReplacerPlugin(), cssPlugin()],
     };
