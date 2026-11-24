@@ -7,6 +7,7 @@ import { targets } from './manifest.mjs';
 const CWD = cwd(import.meta.url);
 const ROOT = join(CWD, '..');
 const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
+const DEV = process.argv.some((string) => string === '--dev');
 
 /**
  * Deliberately not try-catching around these operations.
@@ -17,7 +18,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
     // default build
     Promise.all([
         // prod targets
-        Promise.all(Object.entries(targets).map(([name, _config]) => bundleTarget(name))),
+        Promise.all(Object.entries(targets).map(([name, config]) => bundleTarget(name, config, { dev: DEV }))),
         // prod legacy
         bundle({
             plugins: [zodReplacerPlugin(), cssPlugin()],
