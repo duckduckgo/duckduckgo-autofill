@@ -2,9 +2,12 @@ import esbuild from 'esbuild';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, relative } from 'path';
 import { cwd } from './utils.mjs';
+import { bundleTarget } from './bundle-target.mjs';
+import { targets } from './manifest.mjs';
 const CWD = cwd(import.meta.url);
 const ROOT = join(CWD, '..');
 const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
+const DEV = process.argv.some((string) => string === '--dev');
 
 /**
  * Deliberately not try-catching around these operations.
@@ -14,7 +17,13 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
 (async () => {
     // default build
     Promise.all([
-        bundle({}),
+        // prod targets
+        Promise.all(Object.entries(targets).map(([name, config]) => bundleTarget(name, config, { dev: DEV }))),
+        // prod legacy
+        bundle({
+            plugins: [zodReplacerPlugin(), cssPlugin()],
+        }),
+        // debug
         bundle({
             plugins: [cssPlugin()],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
@@ -41,7 +50,6 @@ async function bundle(buildOptions = {}) {
         outfile: join(ROOT, 'dist/autofill.js'),
         metafile: true,
         write: false,
-        plugins: [zodReplacerPlugin(), cssPlugin()],
         ...buildOptions,
     };
 
@@ -169,7 +177,7 @@ async function scannerRunner() {
  * in the validators with `export const x = null;` This is done
  * to strip `zod` from the final build.
  */
-function zodReplacerPlugin() {
+export function zodReplacerPlugin() {
     return {
         name: 'zod-replacers',
         setup(build) {
@@ -223,7 +231,7 @@ export function replaceConstExports(fileAsString) {
 /**
  * Plugin to handle CSS files and transform url() calls into data URLs
  */
-function cssPlugin() {
+export function cssPlugin() {
     return {
         name: 'css-plugin',
         setup(build) {

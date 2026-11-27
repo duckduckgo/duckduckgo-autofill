@@ -50,10 +50,26 @@ await createAndroidMocks()
 All future mocks should uphold this constraint of conforming to the `MockBuilder` interface. You can see
 the first two implementations of mocking in `integration-test/helpers/mocks.js`
 
+### Testing a different build
+
+`createAutofillScript()` loads `dist/autofill.js` by default. To test another build target, such as the iOS build
+that waits in `about:blank` frames, pass its path to `.bundle()`:
+
+```javascript
+await createAutofillScript()
+    .replaceAll(iosContentScopeReplacements())
+    .platform('ios')
+    .bundle('./dist/autofill.ios.js')
+    .applyTo(page)
+```
+
+Unless a server is already running on port 3210, Playwright runs `npm run build` before the tests (see `webServer` in
+`playwright.config.js`). So edit files in `src/`, not `dist/` - changes to `dist/` get overwritten.
+
 ### Page Helpers
 
 Create wrappers/helpers for known test pages so that duplicated is reduced across test files. Inside
-`integration-test/helpers/mocks.js` you'll see there's already wrappers around 3 different test
+`integration-test/helpers/pages` you'll see there are already wrappers around many test
 pages and their intention is to hide implementation details (like selectors etc) away from the actual
 test files.
 
@@ -65,6 +81,19 @@ methods should be named in a styles that matches what the application does, or w
 const emailPage = emailAutofillPage(page)
 await emailPage.navigate()
 await emailPage.clickIntoInput()
+```
+
+Assertions can live in page helpers too. For example, `integration-test/tests/about-blank.ios.spec.js` doesn't import
+`expect` at all - every step and assertion is a named method on `aboutBlankPage`, so the spec reads as a list of steps:
+
+```js
+const frames = aboutBlankPage(page)
+await frames.openWithAutofillInEveryFrame()
+await frames.addFrameWithoutSrc('frame')
+await frames.assertAutofillDormant('frame')
+
+await frames.writeFormWithDocumentWrite('frame')
+await frames.assertAutofillStarted('frame')
 ```
 
 ## How to run locally

@@ -28,6 +28,9 @@ declare const windowsInteropPostMessage: (message: WindowsMessageFormat | Window
 declare const windowsInteropAddEventListener: Window['addEventListener'];
 declare const windowsInteropRemoveEventListener: Window['removeEventListener'];
 
+// Only in scope inside the iOS build wrapper, see scripts/bundle-target.mjs and src/activation.js
+declare const ddgAutofill: () => void;
+
 interface Window {
     // Used in the Android app
     EmailInterface: {

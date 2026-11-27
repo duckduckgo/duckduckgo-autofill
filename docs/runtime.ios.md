@@ -1,3 +1,5 @@
+> **Note:** iOS is currently the only platform with its own build, `dist/autofill.ios.js`: an optimised bundle that waits in empty `about:blank` frames (see [`src/activation.js`](../src/activation.js)). We expect each platform to get its own build later.
+
 ## ~`getRuntimeConfiguration()`~
 
 on Apple devices, this data is retrieved from the following string-replacements
